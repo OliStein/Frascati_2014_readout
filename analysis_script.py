@@ -12,15 +12,17 @@ from analysis_modules import Tee
 import sys
 import os
 
+l = log_files()
+d = data()
+
 cwd = os.getcwd()
 
 data_path = os.path.join(cwd,'data')
+d.folder_check_create(data_path,0)
 
-print data_path
 
 
-l = log_files()
-d = data()
+
  
  
 l.log_file_set(data_path,'log')

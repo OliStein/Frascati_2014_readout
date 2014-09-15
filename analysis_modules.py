@@ -54,8 +54,8 @@ class log_files():
     
     # Setting up the log file in the directory where the script is saved
     def log_file_set(self,path,name):
-        if not os.path.exists(str(path)+'\\log_files'):
-            os.mkdir(str(path)+'\\log_files')
+        if not os.path.exists(os.path.join(path,'log_files')):
+            os.mkdir(os.path.join(path,'log_files'))
         
         # Directory of the script 
         self.c_dir = os.getcwd()
@@ -103,7 +103,7 @@ class data():
     # Checks and creates folder at given path
     def folder_check_create(self,path,pflag):
         g.printer('checking',pflag)
-        print path
+        g.printer(path,pflag)
         
         if  os.path.exists(path):
             
