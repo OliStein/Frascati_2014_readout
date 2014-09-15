@@ -18,7 +18,7 @@ import time
 import glob
 
 
-
+# Class for writing the console output in a log file
 class Tee(object):
     def __init__(self, *files):
         self.files = files
@@ -26,8 +26,11 @@ class Tee(object):
         for f in self.files:
             f.write(obj)
             
-
+# Class for printing text
+#flag decides if printed or not
 class gen():
+    # Prints string as follows
+    # Used at beginning of every function
     def tprinter(self,string,flag):
         if flag == 1: 
             print ''
@@ -37,7 +40,7 @@ class gen():
             print ''
         else:
             pass
-        
+    # simple print function     
     def printer(self,string,flag):
         if flag == 1: 
             print str(string)
@@ -97,7 +100,7 @@ class log_files():
             os.remove(fl)
 
 class data():
-    
+    # Checks and creates folder at given path
     def folder_check_create(self,path,pflag):
         g.printer('checking',pflag)
         print path
@@ -114,27 +117,29 @@ class data():
            
 
         
-    
+    # Checking for infrastructure
     def check_infra_structure(self,path,pflag):
         g.tprinter('checking for infrastructure',pflag)
-
+        
+        # In \\raw_data the scope data will be stored 
         ndir = '\\raw_data'
         npath=path+ndir
         self.folder_check_create(npath,pflag)
         
+        # In \\ana_data the analysed data will be stored
         ndir = '\\ana_data'
         npath=path+ndir
         self.folder_check_create(npath,pflag)
      
-     
+    # function for loading csv files in a list [[]]
     def csv_file_loader(self,path,fname,pflag):
         g.printer('running csv_file_loader',pflag)
 
-
+        # Checks in path for fname 
         if os.path.isfile(path+'\\'+fname):
             g.printer(fname+' found',pflag)
             
-            
+            # Loads fname and writes it into data
             data = []
             with open(path+'\\'+fname,'r') as f:
                 for line in csv.reader(f,delimiter = ',', skipinitialspace = True):
@@ -150,6 +155,8 @@ class data():
         print ''
         return data       
     
+    # Saves data_list to fname in path as .csv
+    # flag indicates if existing file will be overwritten 
     def csv_file_safer(self,path,fname,data_list,flag,pflag):
         g.printer('running csv_file_safer',pflag)
         
@@ -187,20 +194,24 @@ class data():
         
         
 
-
+    # function for creating folder with the right folder naming 
     def test_data_creator(self,path,pflag):
         g.tprinter('running test data creator',pflag)
-
+        
+        # Checks and creates the \\raw_data folder
         ndir='\\raw_data'
         npath=path+ndir
         self.folder_check_create(npath,pflag)
         
+        # If path exists csv-batch file will be loaded
         if os.path.exists(str(path)+str(ndir)):
             print ndir+' exists'
             
-            
+            # Loading .csv bath file
+            # Writes the loaded file into list
             self.batch_data = self.csv_file_loader(path,'folder_batch.csv',0) 
             
+            # Checks and creates a folder with name from self.batch_data list 
             for i in self.batch_data[1::]:
                 nfolder = '_'.join(i)
                 npath=path+'\\raw_data\\'+nfolder
@@ -212,7 +223,7 @@ class data():
         
         print ''
         
-    
+    # Function for finding the data files in the \\raw_data path and writing the info to self.data_list
     def find_data(self,path,pflag):
         g.printer('running find_data',1)
         self.data_list = []
@@ -221,16 +232,22 @@ class data():
             for f in files:        
                 self.data_list.append(os.path.join(paths,f))
         print ''
-        
+    # Creates an analysis file as .csv and saves it to path
+    # This is the base for the analysis
+    # The file will be loaded and completed with the analysis results  
+    # Flag indicates if the existing file will be overwritten  
     def ana_file_creator(self,path,flag,pflag):
         g.tprinter('running ana_file_creator',pflag)
         ana_file = 'ana_file.csv'
+        # HEader with the column names
         self.ana_list = [['id','meas. type','run','date','detector','type','xpos','ypos','icBLM','icBLM DAQ','att. icBLM','volt. icBLM','dBLM',
                           'att. DBLM','shunt','volt. dBLM','scpr11','scpr12','scpr21','scpr22','udc','meas. nr.','time',
                           'WC','WC sig.','WC noise','WC offset','WC max. sig.','WC FWHM','WC int','WC charge','WC ppb',
                           'icBLM','icBLM sig.','icBLM noise','icBLM offset','icBLM max. sig.','icBLM max sig. att. corr.','icBLM FWHM','icBLM int.','icBLM int. att. corr.','icBLM charge sig.','icBLM ppb',
                           'dBLM','dBLM sig.','dBLM noise','dBLM offset','dBLM max. sig.','dBLM max sig. att. corr.','dBLM FWHM','dBLM int.','dBLM int. att. corr.','dBLM charge sig.',
                           'analyzed','file']]
+        # Extends the list with the found data files and pathes
+        # Analysis results are set to zero in the beginning
         for i in self.data_list:
             k = i.split('\\')
             info = k[-1].split('.')[-2].split('_')
@@ -246,6 +263,7 @@ class data():
         
         
         
+        # Saves the analysis file 
         if os.path.isfile(os.path.join(path,ana_file)):
             if flag == 1:
                 g.printer(ana_file+' exists but will be overwritten',pflag)
@@ -271,13 +289,15 @@ class data():
 #             f.close()
         print ''
         
-        
+    # Loads the analysis file    
     def ana_file_loader(self,path,pflag):
         g.tprinter('running ana_file_loader',pflag)
         
         self.ana_file = self.csv_file_loader(path,'ana_file.csv',1) 
         
 #         return self.ana_file
+    # Checks if the analysis file exists
+    # If not program stops and gives error message
     def ana_file_checker(self,pflag):
         g.tprinter('running ana_file_checker',pflag)
         
@@ -303,10 +323,11 @@ class data():
         
         g.printer('ana_file ok',pflag)        
         
-            
-    def ana_file_safer(self,path,data_list,flag,pflag,sflag,info):
+    # Saves analysis file 
+    # flag for overwriting
+    # sflag for saving as ana_file or ana_file_str(info)        
+    def ana_file_safer(self,path,data_list,flag,info,sflag,pflag,):
     
-            
         g.tprinter('running ana_file_safer',pflag)
         if sflag == 1:
             
