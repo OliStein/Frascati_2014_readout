@@ -10,33 +10,38 @@ from analysis_modules import log_files
 from analysis_modules import data
 from analysis_modules import Tee
 import sys
+import os
 
-data_path = 'C:\\work\\Frascati_2014\\New_readout_script\\data'
+cwd = os.getcwd()
+
+data_path = os.path.join(cwd,'data')
+
+print data_path
 
 
 l = log_files()
 d = data()
-
-
-l.log_file_set(data_path,'log')
  
+ 
+l.log_file_set(data_path,'log')
+  
 f = open(l.log_path(),'a')
 original = sys.stdout
 sys.stdout = Tee(sys.stdout, f)
- 
- 
+  
+  
 d.check_infra_structure(data_path,1)
 d.test_data_creator(data_path,1)
 d.find_data(data_path,1)
 d.ana_file_creator(data_path,1,1)
 d.ana_file_loader(data_path,1)
-
+ 
 d.ana_file_checker(1)
-
-
-
-
-d.ana_file_safer(data_path,d.ana_file,1,1,0,'bla')
+ 
+# 
+# 
+# 
+# d.ana_file_safer(data_path,d.ana_file,1,'bla',1,0)
 
 # print int(d.ana_list[1][0])
 # print d.ana_list[1][0]+1

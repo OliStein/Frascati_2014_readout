@@ -64,7 +64,7 @@ class log_files():
         self.creat_time = strftime("%Y%m%d_%H%M", localtime())
         
         # Path and name of the log file
-        self.log_file_path=path+'\\log_files\\'+str(name)+'_'+self.creat_time+'.txt'
+        self.log_file_path=os.path.join(path,'log_files',str(name)+'_'+self.creat_time+'.txt')
         print self.log_file_path
         
         # Head of the log file
@@ -96,7 +96,7 @@ class log_files():
         return self.log_file_path
 
     def log_file_cleaner(self, path):
-        for fl in glob.glob(str(path)+'\\log*.txt'):
+        for fl in glob.glob(os.path.join(path,'log*.txt')):
             os.remove(fl)
 
 class data():
@@ -112,7 +112,7 @@ class data():
         else: 
             g.printer('path does NOT exists',pflag)
         
-            os.mkdir(str(path))
+            os.mkdir(path)
             g.printer('path created',pflag)
            
 
@@ -122,13 +122,13 @@ class data():
         g.tprinter('checking for infrastructure',pflag)
         
         # In \\raw_data the scope data will be stored 
-        ndir = '\\raw_data'
-        npath=path+ndir
+        ndir = 'raw_data'
+        npath = os.path.join(path,ndir)
         self.folder_check_create(npath,pflag)
         
         # In \\ana_data the analysed data will be stored
-        ndir = '\\ana_data'
-        npath=path+ndir
+        ndir = 'ana_data'
+        npath = os.path.join(path,ndir)
         self.folder_check_create(npath,pflag)
      
     # function for loading csv files in a list [[]]
@@ -136,12 +136,12 @@ class data():
         g.printer('running csv_file_loader',pflag)
 
         # Checks in path for fname 
-        if os.path.isfile(path+'\\'+fname):
+        if os.path.isfile(os.path.join(path,fname)):
             g.printer(fname+' found',pflag)
             
             # Loads fname and writes it into data
             data = []
-            with open(path+'\\'+fname,'r') as f:
+            with open(os.path.join(path,fname),'r') as f:
                 for line in csv.reader(f,delimiter = ',', skipinitialspace = True):
                     data.append(line)
             f.close()
@@ -163,7 +163,7 @@ class data():
         
          
 
-        if os.path.isfile(path+'\\'+fname):
+        if os.path.isfile(os.path.join(path,fname)):
 
             g.printer(fname+' existing',pflag)
         
@@ -199,8 +199,8 @@ class data():
         g.tprinter('running test data creator',pflag)
         
         # Checks and creates the \\raw_data folder
-        ndir='\\raw_data'
-        npath=path+ndir
+        ndir='raw_data'
+        npath=os.path.join(path,ndir)
         self.folder_check_create(npath,pflag)
         
         # If path exists csv-batch file will be loaded
@@ -214,7 +214,7 @@ class data():
             # Checks and creates a folder with name from self.batch_data list 
             for i in self.batch_data[1::]:
                 nfolder = '_'.join(i)
-                npath=path+'\\raw_data\\'+nfolder
+                npath=os.path.join(path,ndir,nfolder)
                 self.folder_check_create(npath,pflag)
                     
                 
@@ -227,7 +227,7 @@ class data():
     def find_data(self,path,pflag):
         g.printer('running find_data',1)
         self.data_list = []
-        for paths,dirs,files in os.walk(path+'\\raw_data'):
+        for paths,dirs,files in os.walk(os.path.join(path,'raw_data')):
             
             for f in files:        
                 self.data_list.append(os.path.join(paths,f))
@@ -249,7 +249,7 @@ class data():
         # Extends the list with the found data files and pathes
         # Analysis results are set to zero in the beginning
         for i in self.data_list:
-            k = i.split('\\')
+            k = os.path.split(i)
             info = k[-1].split('.')[-2].split('_')
 #             info[0]= int(info[0])
 #             info[3]= int(info[3])
@@ -334,7 +334,7 @@ class data():
             ana_file_name = 'ana_file.csv'
             g.printer('file name: '+ana_file_name,pflag)
         else:
-            ana_file_name ='ana_file_'+info+'.csv'
+            ana_file_name ='ana_file_'+str(info)+'.csv'
             g.printer('file name: '+ana_file_name,pflag)
         self.csv_file_safer(path,ana_file_name,data_list,flag,pflag)
    
