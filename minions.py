@@ -116,8 +116,12 @@ class lists():
         
         pos = self.find_val('file',header,0)
         
-        file_name = i[pos]
-        print file_name
+        file_name = os.path.split(i[pos])[-1]
+        file_path = os.path.split(i[pos])[0]
+        g.printer(file_name,pflag)
+        g.printer(file_path,pflag)
+        
+        return [file_path,file_name]
          
         
         

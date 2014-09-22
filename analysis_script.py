@@ -13,10 +13,12 @@ import sys
 import os
 
 from minions import lists
+from minions import csv_list
+
 
 l = log_files()
 d = data()
-
+csv = csv_list()
 li = lists()
 
 cwd = os.getcwd()
@@ -51,9 +53,12 @@ k = 1
 for i in d.ana_file[1:]:
     if k <= 20 and i >= len(d.ana_file): 
         
-        li.data_grabber(i,header,3,1)
-        print k
-        
+        data_path = li.data_grabber(i,header,3,1)
+        data_comp = csv.csv_file_loader(data_path[0],data_path[1],1)
+        data_head = data_comp[:22]
+        data = data_comp[23:]
+         
+        print data_head
     else:
         print 'stop'
         break
