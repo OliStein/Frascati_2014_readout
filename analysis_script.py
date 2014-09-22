@@ -12,8 +12,12 @@ from analysis_modules import Tee
 import sys
 import os
 
+from minions import lists
+
 l = log_files()
 d = data()
+
+li = lists()
 
 cwd = os.getcwd()
 
@@ -39,7 +43,22 @@ d.ana_file_creator(data_path,1,1)
 d.ana_file_loader(data_path,1)
  
 d.ana_file_checker(1)
- 
+
+
+
+header = d.ana_file[0]
+k = 1
+for i in d.ana_file[1:]:
+    if k <= 20 and i >= len(d.ana_file): 
+        
+        li.data_grabber(i,header,3,1)
+        print k
+        
+    else:
+        print 'stop'
+        break
+    k += 1
+    
 # 
 # 
 # 

@@ -17,6 +17,11 @@ from time import strftime, localtime
 import time
 import glob
 
+from minions import gen
+from minions import csv_list
+
+g = gen() 
+c = csv_list()
 
 # Class for writing the console output in a log file
 class Tee(object):
@@ -28,27 +33,27 @@ class Tee(object):
             
 # Class for printing text
 #flag decides if printed or not
-class gen():
-    # Prints string as follows
-    # Used at beginning of every function
-    def tprinter(self,string,flag):
-        if flag == 1: 
-            print ''
-            print '--------------------------------------------------------------'
-            print str(string)
-            print '--------------------------------------------------------------'
-            print ''
-        else:
-            pass
-    # simple print function     
-    def printer(self,string,flag):
-        if flag == 1: 
-            print str(string)
-            print ''
-        else:
-            pass
+# class gen():
+#     # Prints string as follows
+#     # Used at beginning of every function
+#     def tprinter(self,string,flag):
+#         if flag == 1: 
+#             print ''
+#             print '--------------------------------------------------------------'
+#             print str(string)
+#             print '--------------------------------------------------------------'
+#             print ''
+#         else:
+#             pass
+#     # simple print function     
+#     def printer(self,string,flag):
+#         if flag == 1: 
+#             print str(string)
+#             print ''
+#         else:
+#             pass
 
-g = gen()            
+g = gen()           
 # Class for analysing the data
 class log_files():
     
@@ -132,64 +137,64 @@ class data():
         self.folder_check_create(npath,pflag)
      
     # function for loading csv files in a list [[]]
-    def csv_file_loader(self,path,fname,pflag):
-        g.printer('running csv_file_loader',pflag)
-
-        # Checks in path for fname 
-        if os.path.isfile(os.path.join(path,fname)):
-            g.printer(fname+' found',pflag)
-            
-            # Loads fname and writes it into data
-            data = []
-            with open(os.path.join(path,fname),'r') as f:
-                for line in csv.reader(f,delimiter = ',', skipinitialspace = True):
-                    data.append(line)
-            f.close()
-            self
-           
-        else:
-            g.printer('no '+fname+' found',pflag)
-           
-       
-        
-        print ''
-        return data       
-    
-    # Saves data_list to fname in path as .csv
-    # flag indicates if existing file will be overwritten 
-    def csv_file_safer(self,path,fname,data_list,flag,pflag):
-        g.printer('running csv_file_safer',pflag)
-        
-        
-         
-
-        if os.path.isfile(os.path.join(path,fname)):
-
-            g.printer(fname+' existing',pflag)
-        
-            if flag == 1:
-                g.printer('file will be overwritten '+fname,pflag)
-                   
-            
-                with open(os.path.join(path,fname),'wb') as f:
-                    writer = csv.writer(f)
-                    writer.writerows(data_list)
-                f.close()
-            else:
-                g.printer('no writing',pflag)
-           
-        else:
-            g.printer(fname+' not existing',pflag)
-            g.printer('writing to '+fname,pflag)
-
-           
-            with open(os.path.join(path,fname),'wb') as f:
-                writer = csv.writer(f)
-                writer.writerows(data_list)
-            f.close()
-       
-        
-        print ''
+#     def csv_file_loader(self,path,fname,pflag):
+#         g.printer('running csv_file_loader',pflag)
+# 
+#         # Checks in path for fname 
+#         if os.path.isfile(os.path.join(path,fname)):
+#             g.printer(fname+' found',pflag)
+#             
+#             # Loads fname and writes it into data
+#             data = []
+#             with open(os.path.join(path,fname),'r') as f:
+#                 for line in csv.reader(f,delimiter = ',', skipinitialspace = True):
+#                     data.append(line)
+#             f.close()
+#             self
+#            
+#         else:
+#             g.printer('no '+fname+' found',pflag)
+#            
+#        
+#         
+#         print ''
+#         return data       
+#     
+#     # Saves data_list to fname in path as .csv
+#     # flag indicates if existing file will be overwritten 
+#     def csv_file_safer(self,path,fname,data_list,flag,pflag):
+#         g.printer('running csv_file_safer',pflag)
+#         
+#         
+#          
+# 
+#         if os.path.isfile(os.path.join(path,fname)):
+# 
+#             g.printer(fname+' existing',pflag)
+#         
+#             if flag == 1:
+#                 g.printer('file will be overwritten '+fname,pflag)
+#                    
+#             
+#                 with open(os.path.join(path,fname),'wb') as f:
+#                     writer = csv.writer(f)
+#                     writer.writerows(data_list)
+#                 f.close()
+#             else:
+#                 g.printer('no writing',pflag)
+#            
+#         else:
+#             g.printer(fname+' not existing',pflag)
+#             g.printer('writing to '+fname,pflag)
+# 
+#            
+#             with open(os.path.join(path,fname),'wb') as f:
+#                 writer = csv.writer(f)
+#                 writer.writerows(data_list)
+#             f.close()
+#        
+#         
+#         print ''
             
         
         
@@ -270,7 +275,7 @@ class data():
 #                 print ana_file+' exists but will be overwritten'
                 
                 
-                self.csv_file_safer(path,ana_file,self.ana_list,flag,pflag)
+                c.csv_file_safer(path,ana_file,self.ana_list,flag,pflag)
                 
 #                 with open(os.path.join(path,ana_file),'wb') as f:
 #                     writer = csv.writer(f)
@@ -282,7 +287,7 @@ class data():
         else:
             g.printer(ana_file+' does NOT exist',pflag)
 #             print ana_file+' does NOT exist'
-            self.csv_file_safer(path,ana_file,self.ana_list,1,0)
+            c.csv_file_safer(path,ana_file,self.ana_list,1,0)
 #             with open(os.path.join(path,ana_file),'wb') as f:
 #                 writer = csv.writer(f)
 #                 writer.writerows(self.ana_list)
@@ -293,7 +298,7 @@ class data():
     def ana_file_loader(self,path,pflag):
         g.tprinter('running ana_file_loader',pflag)
         
-        self.ana_file = self.csv_file_loader(path,'ana_file.csv',1) 
+        self.ana_file = c.csv_file_loader(path,'ana_file.csv',1) 
         
 #         return self.ana_file
     # Checks if the analysis file exists
@@ -336,7 +341,7 @@ class data():
         else:
             ana_file_name ='ana_file_'+str(info)+'.csv'
             g.printer('file name: '+ana_file_name,pflag)
-        self.csv_file_safer(path,ana_file_name,data_list,flag,pflag)
+        c.csv_file_safer(path,ana_file_name,data_list,flag,pflag)
    
         
         
