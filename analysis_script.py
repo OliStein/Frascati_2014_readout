@@ -14,13 +14,14 @@ import os
 
 from minions import lists
 from minions import csv_list
+from minions import gen
 
 
 l = log_files()
 d = data()
-csv = csv_list()
+c = csv_list()
 li = lists()
-
+g = gen()
 cwd = os.getcwd()
 
 data_path = os.path.join(cwd,'data')
@@ -41,29 +42,59 @@ sys.stdout = Tee(sys.stdout, f)
 d.check_infra_structure(data_path,1)
 d.test_data_creator(data_path,1)
 d.find_data(data_path,1)
-d.ana_file_creator(data_path,1,1)
+d.ana_file_creator(data_path,0,1)
 d.ana_file_loader(data_path,1)
  
 d.ana_file_checker(1)
 
 
 
+
+
 header = d.ana_file[0]
+
+
+
+
+
+
+analyze_all = 1
+naf = li.tba(d.ana_file,analyze_all)
+
+
 k = 1
 for i in d.ana_file[1:]:
-    if k <= 20 and i >= len(d.ana_file): 
+    if k <= 20 and int(i[li.find_val('analyzed',header,0)])!=1 or analyze_all == 1:
+        g.loop_info(k,naf,1)
+        g.printer('File to be analyzed:',1) 
+        g.printer(os.path.split(i[li.find_val('file',header,0)])[-1],1)
         
-        data_path = li.data_grabber(i,header,3,1)
-        data_comp = csv.csv_file_loader(data_path[0],data_path[1],1)
+        data_comp = li.data_grabber(i,header,3,1)
         data_head = data_comp[:22]
         data = data_comp[23:]
-         
-        print data_head
+        
+        
+        data_out = [data_head[-1]]+data[1:4]
+        
+        g.printer(data_out,1)
+#         c.csv_file_safer()
+        save_folder =  os.path.split(os.path.split(os.path.split(i[li.find_val('file',header,0)])[0])[-1])[-1]
+        save_path = os.path.join(os.path.split(os.path.split(os.path.split(i[li.find_val('file',header,0)])[0])[0])[0],'ana_data')
+        save_path_comp = os.path.join(save_path,save_folder)
+        file_name ='analyzed'+os.path.split(i[li.find_val('file',header,0)])[-1]
+        g.printer(save_path_comp,1)
+        g.printer(file_name,1)
+        c.csv_file_safer(save_path_comp,file_name,data_out,1,1)
+#         g.printer(save_folder,1)
+        
+        k += 1
+#         print data_head
     else:
-        print 'stop'
-        break
-    k += 1
+        pass
+        
     
+
+g.printer('ana_file list finished',1)
 # 
 # 
 # 

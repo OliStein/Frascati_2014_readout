@@ -244,7 +244,7 @@ class data():
     def ana_file_creator(self,path,flag,pflag):
         g.tprinter('running ana_file_creator',pflag)
         ana_file = 'ana_file.csv'
-        # HEader with the column names
+        # Header with the column names
         self.ana_list = [['id','meas. type','run','date','detector','type','xpos','ypos','icBLM','icBLM DAQ','att. icBLM','volt. icBLM','dBLM',
                           'att. DBLM','shunt','volt. dBLM','scpr11','scpr12','scpr21','scpr22','udc','meas. nr.','time',
                           'WC','WC sig.','WC noise','WC offset','WC max. sig.','WC FWHM','WC int','WC charge','WC ppb',

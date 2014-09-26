@@ -40,6 +40,17 @@ class gen():
         else:
             pass
 
+    def loop_info(self,i,maxi,flag):
+        if flag == 1: 
+            print ''
+            print '=============================================================='
+            print 'start analysing file nr. '+str(i)+' of '+str(maxi)
+            print '=============================================================='
+            print ''
+        else:
+            pass
+       
+        
 g = gen()
         
 class csv_list():
@@ -72,7 +83,10 @@ class csv_list():
     def csv_file_safer(self,path,fname,data_list,flag,pflag):
         g.printer('running csv_file_safer',pflag)
         
-        
+        if os.path.isdir(path) == False:
+            os.mkdir(path)
+        else:
+            pass
          
 
         if os.path.isfile(os.path.join(path,fname)):
@@ -102,6 +116,7 @@ class csv_list():
        
         
         print ''
+c = csv_list()
         
 class lists():
     def find_val(self,cname,lists,pflag):
@@ -118,11 +133,32 @@ class lists():
         
         file_name = os.path.split(i[pos])[-1]
         file_path = os.path.split(i[pos])[0]
-        g.printer(file_name,pflag)
-        g.printer(file_path,pflag)
+        g.printer(file_name,0)
+        g.printer(file_path,0)
+        try:
+            data_comp = c.csv_file_loader(file_path,file_name,0)
+            g.printer('data file successfully loaded',1)
+        except:
+            g.printer('no file loaded',1)
+        return data_comp         
         
-        return [file_path,file_name]
-         
+    def tba(self,ana_file,analyze_all):
+        g.tprinter('running tba',1)
+        header = ana_file[0]
+        naf = 0
+        if analyze_all == 1:
+            g.printer('analyze all files',1)
+        else:
+            pass
+        for i in ana_file[1:]:
+            if int(i[self.find_val('analyzed',header,0)])!=1 or analyze_all == 1:
+                naf +=1
+            else:
+                pass
+        
+        g.printer(str(naf)+' of '+str(len(ana_file)-1)+' data sets have to be analyzed',1)
+        
+        return naf
         
         
         
