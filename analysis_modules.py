@@ -19,9 +19,11 @@ import glob
 
 from minions import gen
 from minions import csv_list
+from minions import lists
 
 g = gen() 
 c = csv_list()
+li = lists()  
 
 # Class for writing the console output in a log file
 class Tee(object):
@@ -53,7 +55,7 @@ class Tee(object):
 #         else:
 #             pass
 
-g = gen()           
+          
 # Class for analysing the data
 class log_files():
     
@@ -331,7 +333,7 @@ class data():
     # Saves analysis file 
     # flag for overwriting
     # sflag for saving as ana_file or ana_file_str(info)        
-    def ana_file_safer(self,path,data_list,flag,info,sflag,pflag,):
+    def ana_file_safer(self,path,data_list,flag,info,sflag,pflag):
     
         g.tprinter('running ana_file_safer',pflag)
         if sflag == 1:
@@ -343,6 +345,8 @@ class data():
             g.printer('file name: '+ana_file_name,pflag)
         c.csv_file_safer(path,ana_file_name,data_list,flag,pflag)
    
-        
-        
+    def set_to_analyzed(self,i,header,pflag):
+        g.tprinter('Running set_to_analyzed',pflag)    
+        [li.find_val('analyzed',header,pflag)] 
+        return i
         

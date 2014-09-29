@@ -116,6 +116,21 @@ class csv_list():
        
         
         print ''
+        
+    def analyzed_save(self,header,data_out,i,pflag):
+        g.tprinter('Running analyzed_save',pflag)
+        save_folder =  os.path.split(os.path.split(os.path.split(i[li.find_val('file',header,0)])[0])[-1])[-1]
+        save_path = os.path.join(os.path.split(os.path.split(os.path.split(i[li.find_val('file',header,0)])[0])[0])[0],'ana_data')
+        save_path_comp = os.path.join(save_path,save_folder)
+        file_name ='analyzed_'+os.path.split(i[li.find_val('file',header,0)])[-1]
+        g.printer('save path:',pflag)
+        g.printer(save_path_comp,pflag)
+        g.printer('file anme:',pflag)
+        g.printer(file_name,pflag)
+        c.csv_file_safer(save_path_comp,file_name,data_out,1,pflag)
+#         g.printer(save_folder,1)
+        
+        
 c = csv_list()
         
 class lists():
@@ -160,7 +175,7 @@ class lists():
         
         return naf
         
-        
+li = lists()        
         
         
         
