@@ -17,13 +17,13 @@ from time import strftime, localtime
 import time
 import glob
 
-from minions import gen
-from minions import csv_list
-from minions import lists
+from list_class import lists
+from csv_list_class import csv_list
+from gen_class import gen
 
 g = gen() 
 c = csv_list()
-li = lists()  
+# li = lists()  
 
 # Class for writing the console output in a log file
 class Tee(object):
