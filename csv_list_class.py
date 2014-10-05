@@ -18,13 +18,17 @@ import glob
 from gen_class import gen
 from list_class import lists
 
+
+# import of plotting class
 g = gen()
 
-li = lists()
+# import list class
+# obsolete
+# li = lists()
 
-
+# class for dealing with csv files
 class csv_list():
-    
+    # module for loading a .csv file
     def csv_file_loader(self,path,fname,pflag):
         g.printer('running csv_file_loader',pflag)
 
@@ -34,8 +38,8 @@ class csv_list():
             
             # Loads fname and writes it into data
             data = []
-            with open(os.path.join(path,fname),'r') as f:
-                for line in csv.reader(f,delimiter = ',', skipinitialspace = True):
+            with open(os.path.join(path,fname),'rU') as f:
+                for line in csv.reader(f,delimiter = ',', skipinitialspace = True, dialect=csv.excel_tab):
                     data.append(line)
             f.close()
             self
@@ -50,8 +54,8 @@ class csv_list():
     
     # Saves data_list to fname in path as .csv
     # flag indicates if existing file will be overwritten 
-    def csv_file_safer(self,path,fname,data_list,flag,pflag):
-        g.printer('running csv_file_safer',pflag)
+    def csv_file_saver(self,path,fname,data_list,flag,pflag):
+        g.printer('running csv_file_saver',pflag)
         
         if os.path.isdir(path) == False:
             os.mkdir(path)
@@ -98,7 +102,7 @@ class csv_list():
         g.printer(save_path_comp,pflag)
         g.printer('file anme:',pflag)
         g.printer(file_name,pflag)
-        self.csv_file_safer(save_path_comp,file_name,data_out,1,pflag)
+        self.csv_file_saver(save_path_comp,file_name,data_out,1,pflag)
 #         g.printer(save_folder,1)
 
 
@@ -111,16 +115,19 @@ class csv_list():
         file_path = os.path.split(i[pos])[0]
         g.printer(file_name,0)
         g.printer(file_path,0)
+        data_comp = []
         try:
             data_comp = self.csv_file_loader(file_path,file_name,0)
             g.printer('data file successfully loaded',1)
         except:
             g.printer('no file loaded',1)
+            
         return data_comp   
     
     def find_val(self,cname,lists,pflag):
         g.tprinter('running find_val',pflag)
-        ind = lists.index(cname)
+#         llists = lists.tolist
+        ind = np.where(lists==cname)[0][0]
         g.printer('searched string '+str(cname),pflag)
         g.printer('position of '+str(cname)+' is '+str(ind),pflag)
         return ind  
@@ -134,7 +141,7 @@ class csv_list():
         else:
             pass
         for i in ana_file[1:]:
-            if int(i[self.find_val('analyzed',header,0)])!=1 or analyze_all == 1:
+            if i[self.find_val('analyzed',header,0)]!=1 or analyze_all == 1:
                 naf +=1
             else:
                 pass

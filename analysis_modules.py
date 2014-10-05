@@ -164,8 +164,8 @@ class data():
 #     
 #     # Saves data_list to fname in path as .csv
 #     # flag indicates if existing file will be overwritten 
-#     def csv_file_safer(self,path,fname,data_list,flag,pflag):
-#         g.printer('running csv_file_safer',pflag)
+#     def csv_file_saver(self,path,fname,data_list,flag,pflag):
+#         g.printer('running csv_file_saver',pflag)
 #         
 #         
 #          
@@ -232,79 +232,126 @@ class data():
         
     # Function for finding the data files in the \\raw_data path and writing the info to self.data_list
     def find_data(self,path,pflag):
-        g.printer('running find_data',1)
+        g.tprinter('running find_data',1)
         self.data_list = []
         for paths,dirs,files in os.walk(os.path.join(path,'raw_data')):
             
             for f in files:        
-                self.data_list.append(os.path.join(paths,f))
+                if f.endswith('.csv'): 
+                    self.data_list.append(os.path.join(paths,f))
         print ''
     # Creates an analysis file as .csv and saves it to path
     # This is the base for the analysis
     # The file will be loaded and completed with the analysis results  
     # Flag indicates if the existing file will be overwritten  
-    def ana_file_creator(self,path,flag,pflag):
+    def ana_file_creator(self,path,pflag):
         g.tprinter('running ana_file_creator',pflag)
         ana_file = 'ana_file.csv'
         # Header with the column names
-        self.ana_list = [['id','meas. type','run','date','detector','type','xpos','ypos','icBLM','icBLM DAQ','att. icBLM','volt. icBLM','dBLM',
+        self.ana_list = np.array([['id','meas. type','run','date','detector','type','xpos','ypos','icBLM','icBLM DAQ','att. icBLM','volt. icBLM','dBLM',
                           'att. DBLM','shunt','volt. dBLM','scpr11','scpr12','scpr21','scpr22','udc','meas. nr.','time',
                           'WC','WC sig.','WC noise','WC offset','WC max. sig.','WC FWHM','WC int','WC charge','WC ppb',
                           'icBLM','icBLM sig.','icBLM noise','icBLM offset','icBLM max. sig.','icBLM max sig. att. corr.','icBLM FWHM','icBLM int.','icBLM int. att. corr.','icBLM charge sig.','icBLM ppb',
                           'dBLM','dBLM sig.','dBLM noise','dBLM offset','dBLM max. sig.','dBLM max sig. att. corr.','dBLM FWHM','dBLM int.','dBLM int. att. corr.','dBLM charge sig.',
-                          'analyzed','file']]
+                          'analyzed','file']])
         # Extends the list with the found data files and pathes
         # Analysis results are set to zero in the beginning
+        
         for i in self.data_list:
             k = os.path.split(i)
-            info = k[-1].split('.')[-2].split('_')
-#             info[0]= int(info[0])
-#             info[3]= int(info[3])
-#             info[5]= int(info[5])
-            
-#             print len(self.ana_list[0])
-#             print [0]*(len(self.ana_list[0])-len(info))
-            info = info+[0]*(len(self.ana_list[0])-len(info)-1)
-            info.append(i)
-            self.ana_list.append(info)
+            info =np.array(k[-1].split('.')[-2].split('_'))
+
+            num_of_zeros= len(self.ana_list[0])-len(info)-1
+#             print num_of_zeros
+
+            info=np.append(info,np.zeros(num_of_zeros))
+            info = np.append(info,np.array(i))
+            self.ana_list = np.vstack((self.ana_list,info))
+
         
         
         
         # Saves the analysis file 
-        if os.path.isfile(os.path.join(path,ana_file)):
-            if flag == 1:
-                g.printer(ana_file+' exists but will be overwritten',pflag)
-#                 print ana_file+' exists but will be overwritten'
-                
-                
-                c.csv_file_safer(path,ana_file,self.ana_list,flag,pflag)
-                
-#                 with open(os.path.join(path,ana_file),'wb') as f:
-#                     writer = csv.writer(f)
-#                     writer.writerows(self.ana_list)
-#                 f.close()
-            else:
-                g.printer(ana_file+' exists',pflag)
-#                 print ana_file+' exists'
-        else:
-            g.printer(ana_file+' does NOT exist',pflag)
-#             print ana_file+' does NOT exist'
-            c.csv_file_safer(path,ana_file,self.ana_list,1,0)
-#             with open(os.path.join(path,ana_file),'wb') as f:
-#                 writer = csv.writer(f)
-#                 writer.writerows(self.ana_list)
-#             f.close()
-        print ''
-        
+        c.csv_file_saver(path,ana_file,self.ana_list,1,pflag)
+#         if os.path.isfile(os.path.join(path,ana_file)):
+#             if flag == 1:
+#                 g.printer(ana_file+' exists but will be overwritten',pflag)
+# #                 print ana_file+' exists but will be overwritten'
+#                 
+#                 
+#                 c.csv_file_saver(path,ana_file,self.ana_list,flag,pflag)
+#                 
+# #                 with open(os.path.join(path,ana_file),'wb') as f:
+# #                     writer = csv.writer(f)
+# #                     writer.writerows(self.ana_list)
+# #                 f.close()
+#             else:
+#                 g.printer(ana_file+' exists',pflag)
+# #                 print ana_file+' exists'
+#         else:
+#             g.printer(ana_file+' does NOT exist',pflag)
+# #             print ana_file+' does NOT exist'
+#             c.csv_file_saver(path,ana_file,self.ana_list,1,0)
+# #             with open(os.path.join(path,ana_file),'wb') as f:
+# #                 writer = csv.writer(f)
+# #                 writer.writerows(self.ana_list)
+# #             f.close()
+#         print ''
+#         
     # Loads the analysis file    
     def ana_file_loader(self,path,pflag):
         g.tprinter('running ana_file_loader',pflag)
         
-        self.ana_file = c.csv_file_loader(path,'ana_file.csv',1) 
-        
+        try:
+            self.ana_file =np.array(c.csv_file_loader(path,'ana_file.csv',pflag)) 
+        except:
+            g.printer('no ana_file found',pflag)
+            self.ana_file_creator(path, pflag)
+            
+#         g.printer('checking if ana_file is up to date',pflag)
+#         
+#         g.printer(len(self.ana_file),pflag)
+#         g.printer(len(self.data_list),pflag)
 #         return self.ana_file
     # Checks if the analysis file exists
     # If not program stops and gives error message
+    def ana_file_sync(self,pflag):
+        g.tprinter('Running ana_file_sync',pflag)
+   
+        self.missing_data_list = np.array(['missing'])
+        tbaf = 0
+        for i in self.data_list:
+
+
+            if i in self.ana_file:
+                
+#                 g.printer('is in file',pflag)
+                pass
+            else:
+#                 g.printer('is not in file',pflag)
+                self.missing_data_list = np.append(self.missing_data_list,i)
+                
+        if tbaf == 0:
+            g.printer('ana_file is up to date',pflag)
+        else:
+            g.printer(str(tbaf)+' files have to be added to ana_file',pflag)
+            
+            
+        for i in self.missing_data_list[1:]:
+
+            k = os.path.split(i)
+
+            info = k[-1].split('.')[-2].split('_')
+
+            num_of_zeros = len(self.ana_file[0])-len(info)-1
+
+ 
+            info = np.append(info,np.zeros(num_of_zeros))
+            info = np.append(info,np.array(i))
+            self.ana_file = np.vstack((self.ana_file,info)) 
+#         g.printer(len(self.ana_file),pflag)
+
+        
     def ana_file_checker(self,pflag):
         g.tprinter('running ana_file_checker',pflag)
         
@@ -332,8 +379,8 @@ class data():
         
     # Saves analysis file 
     # flag for overwriting
-    # sflag for saving as ana_file or ana_file_str(info)        
-    def ana_file_safer(self,path,data_list,flag,info,sflag,pflag):
+    # sflag for saving as ana_file or ana_file_str(info) for backup        
+    def ana_file_saver(self,path,data_list,flag,info,sflag,pflag):
     
         g.tprinter('running ana_file_safer',pflag)
         if sflag == 1:
@@ -341,12 +388,13 @@ class data():
             ana_file_name = 'ana_file.csv'
             g.printer('file name: '+ana_file_name,pflag)
         else:
+            g.printer('saving backup',pflag)
             ana_file_name ='ana_file_'+str(info)+'.csv'
             g.printer('file name: '+ana_file_name,pflag)
-        c.csv_file_safer(path,ana_file_name,data_list,flag,pflag)
+        c.csv_file_saver(path,ana_file_name,data_list,flag,pflag)
    
     def set_to_analyzed(self,i,header,pflag):
         g.tprinter('Running set_to_analyzed',pflag)    
-        [li.find_val('analyzed',header,pflag)] 
+        [c.find_val('analyzed',header,pflag)] 
         return i
         
