@@ -46,7 +46,7 @@ d.ana_file_loader(data_path,1)
 d.ana_file_sync(1) 
 
 d.ana_file_checker(1)
-
+print len(d.ana_file)
 d.ana_file_saver(data_path,d.ana_file,1,'bla',1,1)
 
 # Stop here
@@ -60,9 +60,9 @@ header = d.ana_file[0]
 analyze_all = 0
 
 # checks the number of files to be analyzed
-naf = c.tba(d.ana_file,analyze_all)
+naf = c.tba(d.ana_file,analyze_all,1)
 # sets the limit of files to be analyzed
-test_limit = 5
+test_limit = -1
 
 # iterator for 
 k = 1
@@ -85,7 +85,7 @@ for i in d.ana_file[1:]:
     # k is iterator and is limited by test_limit
     # if the file is already analyzed and the flag analyze all is not set, 
     # then only unanalyzed files will be treated
-    if (k <= test_limit or test_limit < 0) and (i[c.find_val('analyzed',header,0)]!=1 or analyze_all == 1):
+    if (k <= test_limit or test_limit < 0) and (int(i[c.find_val('analyzed',header,0)])!=1 or analyze_all == 1):
         # gives info of the actual file to be analyzed
         g.loop_info(k,naf,1)
         # gives name of file to be analyzed

@@ -127,21 +127,22 @@ class csv_list():
     def find_val(self,cname,lists,pflag):
         g.tprinter('running find_val',pflag)
 #         llists = lists.tolist
-        ind = np.where(lists==cname)[0][0]
+        ind = np.where(lists == cname)[0][0]
         g.printer('searched string '+str(cname),pflag)
         g.printer('position of '+str(cname)+' is '+str(ind),pflag)
         return ind  
     
-    def tba(self,ana_file,analyze_all):
-        g.tprinter('running tba',1)
+    def tba(self,ana_file,analyze_all,pflag):
+        g.tprinter('running tba',pflag)
         header = ana_file[0]
         naf = 0
         if analyze_all == 1:
-            g.printer('analyze all files',1)
+            g.printer('analyze all files',pflag)
         else:
             pass
         for i in ana_file[1:]:
-            if i[self.find_val('analyzed',header,0)]!=1 or analyze_all == 1:
+            g.printer(int(i[self.find_val('analyzed',header,0)])!=1,pflag)
+            if int(i[self.find_val('analyzed',header,0)])!=1 or analyze_all == 1:
                 naf +=1
             else:
                 pass
