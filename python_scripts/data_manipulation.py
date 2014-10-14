@@ -16,6 +16,7 @@ from time import strftime, localtime
 import time
 import glob
 import matplotlib.pyplot as plt
+import scipy.signal as sig
 from pylab import *
 
 from gen_class import gen
@@ -74,6 +75,27 @@ class data_selector():
 sel = data_selector()
 
 class data_math():
+
+    # Calculates rms value of input vector.
+    def rms(self, dataInput, pflag):
+        g.tprinter('Calculating RMS value of vector', pflag)
+        out = 0
+        for i in dataInput:
+            out = out + i*i #The sum of the squares
+
+        return np.sqrt(out / len(dataInput)) #Dividing by the number of entries, and taking the square root.
+    
+    
+    # Moving average filter implemented with a fft method. 
+    #    ~100 times faster than achievable with median filter.
+    def moving_average(self, a, n=3, end = 20000):
+        kernel = np.ones(n)/float(n)
+        out = sig.fftconvolve(a,kernel,mode = 'same')
+        med = np.median(a[-end:])
+        #To ensure less discontinuity at the ends, the median value is repeated:
+        out[:n] = med
+        out[-n:] = med
+        return out
     
     # makes data as object of math_class
     def data_in(self,data,pflag):
@@ -102,19 +124,18 @@ class data_math():
         else:
             pass
         
-    # tests if the signal to noise ratio is larger than fac    
+    # tests if the signal to noise ratio is larger than SNRmin    
     def signal_indicator(self,detector,coln,pflag):
         g.tprinter('running signal_indicator for'+detector+' detector',pflag)
-        fac = 3
-        smax = self.max_finder(detector,coln,0)
-        snoise = self.noise_finder(detector,coln,0)
-        if smax >= fac*snoise:
-            g.printer('signal '+str(fac)+' times larger than noise',pflag)
-            g.printer('SNR: '+str(smax/snoise),pflag)
+        SNRmin = 2
+        SNR = self.signal_to_noise(detector, coln, 0)
+        if SNR >= SNRmin:
+            g.printer('signal is comfortably larger than noise:',pflag)
+            g.printer('SNR: '+str(SNR),pflag)
             out = 1
         else:
             g.printer('signal not strong enough',pflag)
-            g.printer('SNR: '+str(smax/snoise),pflag)
+            g.printer('SNR: '+str(SNR),pflag)
             out = 0
         return out
    
@@ -122,20 +143,26 @@ class data_math():
     # gives the signal to noise ratio and writes it to ana_file    
     def signal_to_noise(self,detector,coln,pflag):
         g.tprinter('running signal_to_noise for '+detector+' detector',pflag)
-        smax = self.max_finder(detector,coln,0)
-        snoise = self.noise_finder(detector,coln,0)
-        g.printer('SNR: '+str(smax/snoise),pflag)
-      
-        out = smax/snoise
+        
+        offset = np.median(self.data[-20000:,coln])
+        signal = self.data[:,coln] - offset
+        noise = signal[-20000:]
+        
+        sigRMS = self.rms(signal,0)
+        noiseRMS = self.rms(noise,0)
+        
+        g.printer('SNR: '+str(sigRMS/noiseRMS),pflag)
+        
+        out = sigRMS/noiseRMS
         return out 
     
     
     # corrects offset 
-    # takes the mean of the first n data points and subtracts it from all the data        
+    # takes the median of the last n data points and subtracts it from all the data        
     def offset_corr(self,detector,coln,pflag):
         g.tprinter('running offset_corr for '+detector+' detector',pflag)
-        n=1000
-        offset = np.mean(self.data[:n,coln])
+        n=20000
+        offset = np.median(self.data[-n:,coln])
         g.printer('offset for '+detector+' detector:',pflag)
         g.printer(offset,pflag)
         for i in self.data:
@@ -143,14 +170,14 @@ class data_math():
         
         return offset
     
-    # finds nois     
-    # looks for the max and min val in the first n data points
+    # finds noise
+    # looks for the max and min val in the last n data points
     def noise_finder(self,detector,coln,pflag):
-        g.tprinter('running noise_finder for '+detector+' detector',pflag)
-        n = 1000
-        nmax = np.max(self.data[:n,coln])
-        nmin = np.min(self.data[:n,coln])
-        noise = nmax-nmin
+        g.tprinter('running RMS noise_finder for '+detector+' detector',pflag)
+        n = 20000
+        offset = np.median(self.data[-n:,coln])
+        signal = self.data[coln] - offset
+        noise = self.rms(signal[-n:], 0)
         g.printer('noise of '+detector+' detector:',pflag)
         g.printer(noise,pflag)
         return noise
@@ -170,16 +197,15 @@ class data_math():
         # Still needed modules: integrator, FWHM, multiplication mods. 
         #for amplification and attenuation
         #
-        #
         
-    def amp_calc(self,coln,detector,amp,pflag):
+    def amp_calc(self,detector,coln,amp,pflag):
         g.tprinter('running amp_clac for '+detector+' detector',pflag)
         g.printer('the amplification/attenuation is '+str(int(amp))+' dB',pflag)
         out = 10**(float(amp)/20)
         g.printer('the resulting factor is: '+str(out),pflag)
         return out
     
-    def data_amp_corr(self,coln,detector,amp_fac,pflag):
+    def data_amp_corr(self,detector,coln,amp_fac,pflag):
         g.tprinter('running data_amp_corr for '+detector+' detector',pflag)
         g.printer('correcting data with the amp_fac of '+str(int(amp_fac)),pflag)
         for i in self.data:
