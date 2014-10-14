@@ -23,7 +23,7 @@ d = data()
 c = csv_list()
 # li = lists()
 g = gen()
-cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
+cwd = '/home/csoerens/Desktop/python/Frascati_Data_Analysis'
 sel = data_selector()
 m  = data_math() 
 
@@ -143,6 +143,9 @@ for i in d.ana_file[1:]:
             
                 i[c.find_val(det+' noise',header,0)] = m.noise_finder(det,coln,1)
                 
+                # Added to find the integral value.
+                i[c.find_val(det+' int',header,0)] = m.integrator(det,coln,1)
+                
 #                 m.data_plotter(det,coln,1)
                 # detector specific routines
                 # not all detectors have a amplification or attenuation
@@ -150,21 +153,21 @@ for i in d.ana_file[1:]:
                 # icBLM
                 if  det == 'icBLM':
                     # looks up the attenuation/amplification for the specific detector
-                    amp = m.amp_calc(coln,det,i[c.find_val('att. ref.',header,0)],1)
+                    amp = m.amp_calc(det,coln,i[c.find_val('att. ref.',header,0)],1)
                     g.printer(amp,1)
                     i[c.find_val('icBLM max sig. att. corr.',header,0)] = amp*float(i[c.find_val('icBLM max. sig.',header,0)])
                     
 
                     # multiplies the data with the correction factor
-                    m.data_amp_corr(coln,det,amp,1)
+                    m.data_amp_corr(det,coln,amp,1)
                 
                 elif det == 'dBLM':
-                    amp = m.amp_calc(coln,det,i[c.find_val('att. diamond',header,0)],1)
+                    amp = m.amp_calc(det,coln,i[c.find_val('att. diamond',header,0)],1)
                     
                     i[c.find_val('dBLM max sig. att. corr.',header,0)] = amp*float(i[c.find_val('dBLM max. sig.',header,0)])
                     
                     # multiplies the data with the correction factor
-                    m.data_amp_corr(coln,det,amp,1)
+                    m.data_amp_corr(det,coln,amp,1)
                 else:
                     pass
                 # plots the data 
