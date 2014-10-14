@@ -143,7 +143,7 @@ class data_math():
     # gives the signal to noise ratio and writes it to ana_file    
     def signal_to_noise(self,detector,coln,pflag):
         g.tprinter('running signal_to_noise for '+detector+' detector',pflag)
-        
+       
         offset = np.median(self.data[-20000:,coln])
         signal = self.data[:,coln] - offset
         noise = signal[-20000:]
