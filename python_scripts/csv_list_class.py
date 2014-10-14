@@ -90,7 +90,8 @@ class csv_list():
        
         
         print ''
-        
+     
+    # saves the analyzed data to the ana_data folder     
     def analyzed_save(self,header,data_out,i,pflag):
         g.tprinter('Running analyzed_save',pflag)
         save_folder =  os.path.split(os.path.split(os.path.split(i[self.find_val('file',header,0)])[0])[-1])[-1]
@@ -100,12 +101,12 @@ class csv_list():
         file_name =os.path.split(i[self.find_val('file',header,0)])[-1]
         g.printer('save path:',pflag)
         g.printer(save_path_comp,pflag)
-        g.printer('file anme:',pflag)
+        g.printer('file name:',pflag)
         g.printer(file_name,pflag)
         self.csv_file_saver(save_path_comp,file_name,data_out,1,pflag)
 #         g.printer(save_folder,1)
 
-
+    # loads the to be analyzed file 
     def data_grabber(self,i,header,channel,pflag):
         g.tprinter('running data_grabber',pflag)
         
@@ -125,14 +126,18 @@ class csv_list():
             
         return data_comp   
     
+    # returns the index of cname in a list
     def find_val(self,cname,lists,pflag):
         g.tprinter('running find_val',pflag)
 #         llists = lists.tolist
         ind = np.where(lists == cname)[0][0]
-        g.printer('searched string '+str(cname),pflag)
-        g.printer('position of '+str(cname)+' is '+str(ind),pflag)
+        g.printer('searched string: '+str(cname),pflag)
+        g.printer('position of: '+str(cname)+' is: '+str(ind),pflag)
         return ind  
     
+    # checks which files in the ana_file have to be analyzed
+    # if analyze_all == 1, all files will be analyzed
+    # if in i in ana_file the analyzed flag is !=1 then the file is included in the analysis 
     def tba(self,ana_file,analyze_all,pflag):
         g.tprinter('running tba',pflag)
         header = ana_file[0]

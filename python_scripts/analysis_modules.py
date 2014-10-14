@@ -33,27 +33,7 @@ class Tee(object):
         for f in self.files:
             f.write(obj)
             
-# Class for printing text
-#flag decides if printed or not
-# class gen():
-#     # Prints string as follows
-#     # Used at beginning of every function
-#     def tprinter(self,string,flag):
-#         if flag == 1: 
-#             print ''
-#             print '--------------------------------------------------------------'
-#             print str(string)
-#             print '--------------------------------------------------------------'
-#             print ''
-#         else:
-#             pass
-#     # simple print function     
-#     def printer(self,string,flag):
-#         if flag == 1: 
-#             print str(string)
-#             print ''
-#         else:
-#             pass
+
 
           
 # Class for analysing the data
@@ -138,68 +118,6 @@ class data():
         npath = os.path.join(path,ndir)
         self.folder_check_create(npath,pflag)
      
-    # function for loading csv files in a list [[]]
-#     def csv_file_loader(self,path,fname,pflag):
-#         g.printer('running csv_file_loader',pflag)
-# 
-#         # Checks in path for fname 
-#         if os.path.isfile(os.path.join(path,fname)):
-#             g.printer(fname+' found',pflag)
-#             
-#             # Loads fname and writes it into data
-#             data = []
-#             with open(os.path.join(path,fname),'r') as f:
-#                 for line in csv.reader(f,delimiter = ',', skipinitialspace = True):
-#                     data.append(line)
-#             f.close()
-#             self
-#            
-#         else:
-#             g.printer('no '+fname+' found',pflag)
-#            
-#        
-#         
-#         print ''
-#         return data       
-#     
-#     # Saves data_list to fname in path as .csv
-#     # flag indicates if existing file will be overwritten 
-#     def csv_file_saver(self,path,fname,data_list,flag,pflag):
-#         g.printer('running csv_file_saver',pflag)
-#         
-#         
-#          
-# 
-#         if os.path.isfile(os.path.join(path,fname)):
-# 
-#             g.printer(fname+' existing',pflag)
-#         
-#             if flag == 1:
-#                 g.printer('file will be overwritten '+fname,pflag)
-#                    
-#             
-#                 with open(os.path.join(path,fname),'wb') as f:
-#                     writer = csv.writer(f)
-#                     writer.writerows(data_list)
-#                 f.close()
-#             else:
-#                 g.printer('no writing',pflag)
-#            
-#         else:
-#             g.printer(fname+' not existing',pflag)
-#             g.printer('writing to '+fname,pflag)
-# 
-#            
-#             with open(os.path.join(path,fname),'wb') as f:
-#                 writer = csv.writer(f)
-#                 writer.writerows(data_list)
-#             f.close()
-#        
-#         
-#         print ''
-            
-        
-        
 
     # function for creating folder with the right folder naming 
     def test_data_creator(self,path,pflag):
@@ -214,7 +132,7 @@ class data():
         if os.path.exists(str(path)+str(ndir)):
             print ndir+' exists'
             
-            # Loading .csv bath file
+            # Loading .csv batch file
             # Writes the loaded file into list
             self.batch_data = self.csv_file_loader(path,'folder_batch.csv',0) 
             
@@ -240,6 +158,8 @@ class data():
                 if f.endswith('.csv'): 
                     self.data_list.append(os.path.join(paths,f))
         print ''
+        
+        
     # Creates an analysis file as .csv and saves it to path
     # This is the base for the analysis
     # The file will be loaded and completed with the analysis results  
@@ -248,11 +168,11 @@ class data():
         g.tprinter('running ana_file_creator',pflag)
         ana_file = 'ana_file.csv'
         # Header with the column names
-        self.ana_list = np.array([['id','meas. type','run','date','detector','type','xpos','ypos','icBLM','icBLM DAQ','att. icBLM','volt. icBLM','dBLM',
-                          'att. DBLM','shunt','volt. dBLM','scpr11','scpr12','scpr21','scpr22','udc','meas. nr.','time',
-                          'WC','WC sig.','WC noise','WC offset','WC max. sig.','WC FWHM','WC int','WC charge','WC ppb',
-                          'icBLM','icBLM sig.','icBLM noise','icBLM offset','icBLM max. sig.','icBLM max sig. att. corr.','icBLM FWHM','icBLM int.','icBLM int. att. corr.','icBLM charge sig.','icBLM ppb',
-                          'dBLM','dBLM sig.','dBLM noise','dBLM offset','dBLM max. sig.','dBLM max sig. att. corr.','dBLM FWHM','dBLM int.','dBLM int. att. corr.','dBLM charge sig.',
+        self.ana_list = np.array([['id','meas. type','run','date','detector','type','xpos','ypos','ref.','ref. DAQ','att. ref.','volt. ref.','diamond',
+                          'att. diamond','shunt','volt. dBLM','scpr11','scpr12','scpr21','scpr22','udc','meas. nr.','time',
+                          'WC','WC sig.','WC offset','WC noise','WC max. sig.','WC SNR','WC FWHM','WC int','WC charge','WC ppb',
+                          'icBLM','icBLM sig.','icBLM offset','icBLM noise','icBLM max. sig.','icBLM SNR','icBLM max sig. att. corr.','icBLM FWHM','icBLM int.','icBLM int. att. corr.','icBLM charge sig.','icBLM ppb',
+                          'dBLM','dBLM sig.','dBLM offset','dBLM noise','dBLM max. sig.','dBLM SNR','dBLM max sig. att. corr.','dBLM FWHM','dBLM int.','dBLM int. att. corr.','dBLM charge sig.',
                           'analyzed','file']])
         # Extends the list with the found data files and pathes
         # Analysis results are set to zero in the beginning
@@ -273,31 +193,8 @@ class data():
         
         # Saves the analysis file 
         c.csv_file_saver(path,ana_file,self.ana_list,1,pflag)
-#         if os.path.isfile(os.path.join(path,ana_file)):
-#             if flag == 1:
-#                 g.printer(ana_file+' exists but will be overwritten',pflag)
-# #                 print ana_file+' exists but will be overwritten'
-#                 
-#                 
-#                 c.csv_file_saver(path,ana_file,self.ana_list,flag,pflag)
-#                 
-# #                 with open(os.path.join(path,ana_file),'wb') as f:
-# #                     writer = csv.writer(f)
-# #                     writer.writerows(self.ana_list)
-# #                 f.close()
-#             else:
-#                 g.printer(ana_file+' exists',pflag)
-# #                 print ana_file+' exists'
-#         else:
-#             g.printer(ana_file+' does NOT exist',pflag)
-# #             print ana_file+' does NOT exist'
-#             c.csv_file_saver(path,ana_file,self.ana_list,1,0)
-# #             with open(os.path.join(path,ana_file),'wb') as f:
-# #                 writer = csv.writer(f)
-# #                 writer.writerows(self.ana_list)
-# #             f.close()
-#         print ''
-#         
+
+
     # Loads the analysis file    
     def ana_file_loader(self,path,pflag):
         g.tprinter('running ana_file_loader',pflag)
@@ -308,11 +205,7 @@ class data():
             g.printer('no ana_file found',pflag)
             self.ana_file_creator(path, pflag)
             
-#         g.printer('checking if ana_file is up to date',pflag)
-#         
-#         g.printer(len(self.ana_file),pflag)
-#         g.printer(len(self.data_list),pflag)
-#         return self.ana_file
+
     # Checks if the analysis file exists
     # If not program stops and gives error message
     def ana_file_sync(self,pflag):
@@ -365,7 +258,7 @@ class data():
             self.ana_file = 0
             sys.exit('ana_file not a list or defined')
     
-        if len(self.ana_file[0]) == 55:
+        if len(self.ana_file[0]) == 58:
             
             self.ana_check = 1
             

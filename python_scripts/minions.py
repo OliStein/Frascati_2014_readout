@@ -15,9 +15,17 @@ import pickle
 from time import strftime, localtime
 import time
 import glob
+import math 
 
 # Class for printing text
 # flag decides if printed or not
+
+
+print 'hallo'
+
+p = 10**(40/20)
+
+print p
 
 class gen():
     
