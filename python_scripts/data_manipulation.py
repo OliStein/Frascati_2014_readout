@@ -194,9 +194,27 @@ class data_math():
 #        plt.axis([0, 6, 0, 20])
         plt.show()
  
-        # Still needed modules: integrator, FWHM, multiplication mods. 
+        # Still needed modules: integrator(DONE), FWHM, multiplication mods. 
         #for amplification and attenuation
         #
+        
+    def integrator(self, detector, coln, pflag):
+        g.tprinter('Running integrator on '+detector+' detector', pflag)
+        integral = 0.0
+        #The estimator for the timestep is the mean of the change of the time.
+        # This should be fairly sound. It's probably not necessary with that 
+        # large a samplespace in time, but here goes. Printing the standard
+        # deviation, just as a check. - Should be Commented out later.
+        dtVector = np.diff(self.data[2000:10000, 0])
+        g.printer('Standard deviation of timesteps: '+str(np.std(dtVector)),pflag)
+        dt = np.mean(dtVector)
+        offset = self.offset_corr(detector, coln, 0)
+        for i in self.data[coln]:
+            integral = integral + ((i-offset) * dt) #Removing the offset 
+            #At every level. If it takes forever, this can be done in the end.
+            
+        g.printer('Integration results in: '+str(integral)+' Vs', pflag)
+        return integral
         
     def amp_calc(self,detector,coln,amp,pflag):
         g.tprinter('running amp_clac for '+detector+' detector',pflag)

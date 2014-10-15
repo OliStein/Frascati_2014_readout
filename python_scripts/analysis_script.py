@@ -70,7 +70,7 @@ naf = c.tba(d.ana_file,analyze_all,1)
 
 # sets the limit of files to be analyzed
 # set to negative value if all sets shall be analyzed
-test_limit = -1
+test_limit = 1
 
 # iterator for 
 k = 1
@@ -144,7 +144,7 @@ for i in d.ana_file[1:]:
                 i[c.find_val(det+' noise',header,0)] = m.noise_finder(det,coln,1)
                 
                 # Added to find the integral value.
-                i[c.find_val(det+' int',header,0)] = m.integrator(det,coln,1)
+                i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,1)
                 
 #                 m.data_plotter(det,coln,1)
                 # detector specific routines
