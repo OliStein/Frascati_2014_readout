@@ -213,6 +213,17 @@ class data_math():
             integral = integral + ((i-offset) * dt) #Removing the offset 
             #At every level. If it takes forever, this can be done in the end.
             
+            #Logbook day two. This is a bit of clusterfuck.
+            # When I run the integration, it invariably spits out an answer which is
+            # roughly the orders of magnitude smaller than it should be, compared to
+            # the analog calculations I've made with the notebook, and integrating
+            # the signal 'normally'. That is, the exact same algorithm, but then, 
+            # not at all. I'm really at a loss here. My sanity is starting to fade
+            # and the world seems grey and stale. 
+            
+            #I guess my sanity has always been questionable, and it is a bit after
+            # six, so the daylight is not really an applicable concept anymore. 
+            
         g.printer('Integration results in: '+str(integral)+' Vs', pflag)
         return integral
         

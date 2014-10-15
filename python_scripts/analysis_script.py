@@ -23,11 +23,13 @@ d = data()
 c = csv_list()
 # li = lists()
 g = gen()
-cwd = '/home/csoerens/Desktop/python/Frascati_Data_Analysis'
+#cwd = '/home/csoerens/Desktop/python/Frascati_Data_Analysis'
+cwd = 'C:\\Github'
 sel = data_selector()
 m  = data_math() 
 
-data_path = os.path.join(cwd,'data')
+data_path = os.path.join(cwd,'frascati_test_data')
+#data_path = os.path.join(cwd,'data')
 d.folder_check_create(data_path,0)
  
  
