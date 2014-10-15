@@ -147,8 +147,8 @@ class csv_list():
         else:
             pass
         for i in ana_file[1:]:
-            g.printer(i[self.find_val('analyzed',header,0)]!=1,pflag)
-            if i[self.find_val('analyzed',header,0)]!=1 or analyze_all == 1:
+            g.printer(float(i[self.find_val('analyzed',header,0)])==1.,pflag)
+            if float(i[self.find_val('analyzed',header,0)])!=1. or analyze_all == 1:
                 naf +=1
             else:
                 pass

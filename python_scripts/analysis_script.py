@@ -70,7 +70,10 @@ naf = c.tba(d.ana_file,analyze_all,1)
 
 # sets the limit of files to be analyzed
 # set to negative value if all sets shall be analyzed
-test_limit = -1
+test_limit = 20
+
+#skip files, for improving speed
+skip_files = 1
 
 # iterator for 
 k = 1
@@ -87,7 +90,9 @@ for i in d.ana_file[1:]:
     # k is iterator and is limited by test_limit
     # if the file is already analyzed and the flag analyze all is not set, 
     # then only unanalyzed files will be treated
-    if (k <= test_limit or test_limit < 0) and (i[c.find_val('analyzed',header,0)]!=1 or analyze_all == 1):
+    # when k % skip_files == 0 (modulo), file will be analyzed 
+    if (k <= test_limit or test_limit < 0) and ((float(i[c.find_val('analyzed',header,0)])!=1 and k % skip_files == 0)
+                                                or analyze_all == 1 ):
         # gives info of the actual file to be analyzed
         g.loop_info(k,naf,1)
         # gives name of file to be analyzed
@@ -111,13 +116,15 @@ for i in d.ana_file[1:]:
         
         # gives the data to data_manipulation class
         m.data_in(data,0)
-
+        
+        # writes the time from the scope file into the analysis file
+        i[c.find_val('time',header,0)] = data_head[18,2]
         # detector loop
         # runs through the coloumns in the data list and analyses the data
         det_list = ['icBLM','dBLM','WC']
         for det in det_list:
             sel.flag_set(0)
-            i[c.find_val('time',header,0)] = data_head[18,2]
+#             i[c.find_val('time',header,0)] = data_head[18,2]
             coln = sel.selector(det,data_header,1)
             if sel.flag_check(0):
                 
@@ -190,7 +197,7 @@ for i in d.ana_file[1:]:
         
 
 
-        k += 1
+#         k += 1
 #         print data_head
 
         # saves the ana_file for backup 
@@ -201,7 +208,8 @@ for i in d.ana_file[1:]:
            
     else:
         pass
-    
+
+    k+=1
     
 
 # end of main analyze loop        
