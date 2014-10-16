@@ -166,7 +166,7 @@ class data_math():
         g.printer('offset for '+detector+' detector:',pflag)
         g.printer(offset,pflag)
         for i in self.data:
-            i[coln] = i[coln]-offset 
+            i[coln] = i[coln]-offset
         
         return offset
     
@@ -176,7 +176,7 @@ class data_math():
         g.tprinter('running RMS noise_finder for '+detector+' detector',pflag)
         n = 20000
         offset = np.median(self.data[-n:,coln])
-        signal = self.data[coln] - offset
+        signal = self.data[:, coln] - offset
         noise = self.rms(signal[-n:], 0)
         g.printer('noise of '+detector+' detector:',pflag)
         g.printer(noise,pflag)
@@ -201,17 +201,21 @@ class data_math():
     def integrator(self, detector, coln, pflag):
         g.tprinter('Running integrator on '+detector+' detector', pflag)
         integral = 0.0
+        
         #The estimator for the timestep is the mean of the change of the time.
         # This should be fairly sound. It's probably not necessary with that 
         # large a samplespace in time, but here goes. Printing the standard
         # deviation, just as a check. - Should be Commented out later.
+        
         dtVector = np.diff(self.data[2000:10000, 0])
-        g.printer('Standard deviation of timesteps: '+str(np.std(dtVector)),pflag)
+        
+        #g.printer('Standard deviation of timesteps: '+str(np.std(dtVector)),pflag)
+        #    -   It was seen that the standard deviation was ~e-24. 
+        #        That's good enough.
+        
         dt = np.mean(dtVector)
-        offset = self.offset_corr(detector, coln, 0)
-        for i in self.data[coln]:
-            integral = integral + ((i-offset) * dt) #Removing the offset 
-            #At every level. If it takes forever, this can be done in the end.
+        for i in self.data[:,coln]:
+            integral = integral + i*dt
             
             #Logbook day two. This is a bit of clusterfuck.
             # When I run the integration, it invariably spits out an answer which is
@@ -223,6 +227,13 @@ class data_math():
             
             #I guess my sanity has always been questionable, and it is a bit after
             # six, so the daylight is not really an applicable concept anymore. 
+            
+            #Logbook day three. I'm a total and utter cock. I really should get
+            # myself together and stop coding, when it gets too late. All of the
+            # sudden I'm forgetting how to fucking index a 2D np array. I guess that
+            # is the limit of my mental capacity. It doesn't look great. 
+            # Seriously doubting my sanity again. Someone should do something. Soon.
+            # It works now, by the way. 
             
         g.printer('Integration results in: '+str(integral)+' Vs', pflag)
         return integral
