@@ -23,11 +23,14 @@ d = data()
 c = csv_list()
 # li = lists()
 g = gen()
+
 cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
+
 sel = data_selector()
 m  = data_math() 
 
 data_path = os.path.join(cwd,'data')
+# print data_path
 d.folder_check_create(data_path,0)
  
  
@@ -52,7 +55,7 @@ d.ana_file_loader(data_path,1)
 d.ana_file_sync(1) 
 
 d.ana_file_checker(1)
-print len(d.ana_file)
+# print len(d.ana_file)
 d.ana_file_saver(data_path,d.ana_file,1,'space',1,1)
 
 # Stop here
@@ -70,7 +73,7 @@ naf = c.tba(d.ana_file,analyze_all,1)
 
 # sets the limit of files to be analyzed
 # set to negative value if all sets shall be analyzed
-test_limit = 20
+test_limit = 10
 
 #skip files, for improving speed
 skip_files = 1

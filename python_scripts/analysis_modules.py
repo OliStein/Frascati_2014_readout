@@ -129,18 +129,27 @@ class data():
         self.folder_check_create(npath,pflag)
         
         # If path exists csv-batch file will be loaded
-        if os.path.exists(str(path)+str(ndir)):
-            print ndir+' exists'
+        if os.path.exists(npath):
+            g.printer('path_exists',pflag)
             
             # Loading .csv batch file
             # Writes the loaded file into list
-            self.batch_data = self.csv_file_loader(path,'folder_batch.csv',0) 
-            
-            # Checks and creates a folder with name from self.batch_data list 
-            for i in self.batch_data[1::]:
-                nfolder = '_'.join(i)
-                npath=os.path.join(path,ndir,nfolder)
-                self.folder_check_create(npath,pflag)
+            try:
+                self.batch_data = c.csv_file_loader(path,'folder_batch.csv',pflag) 
+                g.printer('folder_batch loaded',pflag)
+                # Checks and creates a folder with name from self.batch_data list 
+                for i in self.batch_data[1::]:
+                    nfolder = '_'.join(i)
+                    npath=os.path.join(path,ndir,nfolder)
+                    self.folder_check_create(npath,pflag)
+            except:
+                g.printer('no folder_batch found',pflag)
+#             g.printer('folder_batch loaded',pflag)
+#             # Checks and creates a folder with name from self.batch_data list 
+#             for i in self.batch_data[1::]:
+#                 nfolder = '_'.join(i)
+#                 npath=os.path.join(path,ndir,nfolder)
+#                 self.folder_check_create(npath,pflag)
                     
                 
         else :
