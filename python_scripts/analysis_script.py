@@ -63,7 +63,7 @@ d.find_data(data_path,1)
 
 
 
-# d.ana_file_deleter(data_path,1)
+d.ana_file_deleter(data_path,1)
 
 d.ana_file_loader(data_path,1)
 d.ana_file_loader(data_path,1)
@@ -89,7 +89,7 @@ naf = c.tba(d.ana_file,analyze_all,1)
 # sets the limit of files to be analyzed
 # set to negative value if all sets shall be analyzed
 
-test_limit = 10
+test_limit = 1
 
 #skip files, for improving speed
 skip_files = 1
@@ -170,8 +170,8 @@ for i in d.ana_file[1:]:
             
                 i[c.find_val(det+' noise',header,0)] = m.noise_finder(det,coln,1)
                 
-                # Added to find the integral value.
-                i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,1)
+#                 # Added to find the integral value.
+#                 i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,10,90,1)
                 
 #                 m.data_plotter(det,coln,1)
                 # detector specific routines
@@ -184,6 +184,10 @@ for i in d.ana_file[1:]:
                     g.printer(amp,1)
                     i[c.find_val('icBLM max sig. att. corr.',header,0)] = amp*float(i[c.find_val('icBLM max. sig.',header,0)])
                     
+                    # icBLM integration limits
+                    lo_limit = 10
+                    up_limit = 90
+                    i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,lo_limit,up_limit,1)
 
                     # multiplies the data with the correction factor
                     m.data_amp_corr(det,coln,amp,1)
@@ -195,6 +199,12 @@ for i in d.ana_file[1:]:
                     
                     # multiplies the data with the correction factor
                     m.data_amp_corr(det,coln,amp,1)
+                    
+                    # dBLM integration limits
+                    lo_limit = 10
+                    up_limit = 90
+                    i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,lo_limit,up_limit,1)
+                    
                 else:
                     pass
                 # plots the data 
