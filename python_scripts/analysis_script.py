@@ -173,7 +173,7 @@ for i in d.ana_file[1:]:
 #                 # Added to find the integral value.
 #                 i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,10,90,1)
                 
-#                 m.data_plotter(det,coln,1)
+                m.data_plotter(det,coln,1)
                 # detector specific routines
                 # not all detectors have a amplification or attenuation
                 
@@ -202,9 +202,14 @@ for i in d.ana_file[1:]:
                     
                     # dBLM integration limits
                     lo_limit = 10
-                    up_limit = 90
+                    up_limit = 190
                     i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,lo_limit,up_limit,1)
                     
+                elif det == 'WC':
+                    
+                    lo_limit = 10
+                    up_limit = 90
+                    i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,lo_limit,up_limit,1)
                 else:
                     pass
                 # plots the data 

@@ -54,14 +54,14 @@ class data_selector():
                 
         elif detector == 'icBLM':
             try:
-                col  = np.where(data_header == 'Channel 3')[0][0]
+                col  = np.where(data_header == 'Channel 4')[0][0]
                 g.printer('icBLM data, Channel 3 found',pflag)
             except:
                 g.printer('no data in Channel 3, no icBLM',pflag)
                 self.sel_flag = 0
         elif detector == 'WC':
             try:
-                col  = np.where(data_header == 'Channel 4')[0][0]
+                col  = np.where(data_header == 'Channel 3')[0][0]
                 g.printer('WC data, Channel 4 found',pflag)
             except:
                 g.printer('no data in Channel 4, no WC',pflag)
@@ -190,7 +190,12 @@ class data_math():
         y = self.data[:,coln]
        
         # plots only every 100th data point for speed optimization
+        
+        plt.xlabel('time (s)')
+        plt.ylabel('signal (V)')
+        plt.title('Data of '+str(detector)+' detector')
         plt.plot(x[1:-1:100],y[1:-1:100], 'r-')
+        
 #        plt.axis([0, 6, 0, 20])
         plt.show()
  
