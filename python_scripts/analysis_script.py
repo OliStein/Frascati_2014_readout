@@ -68,9 +68,9 @@ d.find_data(data_path,1)
 d.ana_file_loader(data_path,1)
 d.ana_file_loader(data_path,1)
 d.ana_file_sync(1) 
-
+print len(d.ana_file[0])
 d.ana_file_checker(1)
-# print len(d.ana_file)
+# print len(d.ana_file[0])
 d.ana_file_saver(data_path,d.ana_file,1,'space',1,1)
 
 # Stop here
