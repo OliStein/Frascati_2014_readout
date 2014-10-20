@@ -16,6 +16,7 @@ from time import strftime, localtime
 import time
 import glob
 import matplotlib.pyplot as plt
+
 import scipy.signal as sig
 from pylab import *
 
@@ -117,7 +118,7 @@ class data_math():
     
     # finds  minimum of data
     def min_finder(self,detector,coln,pflag):
-        g.tprinter('running max_finder for '+detector+' detector',pflag)
+        g.tprinter('running min_finder for '+detector+' detector',pflag)
         input = self.data[:,coln] 
         return np.amin(input)
     
@@ -125,7 +126,7 @@ class data_math():
     def inverter(self,detector,coln,fac,pflag):
         g.tprinter('running inverter for '+detector+' detector',pflag)
         # data will be inverted if the absolute min value is fac times larger then the max value 
-        if self.max_finder(detector,coln,pflag) <= fac*abs(self.min_finder(detector,coln,pflag)):
+        if self.max_finder(detector,coln,0) <= fac*abs(self.min_finder(detector,coln,0)):
             for i in self.data:
                 i[coln] = i[coln]*(-1) 
         else:
@@ -192,7 +193,8 @@ class data_math():
     # plots data
     def data_plotter(self,detector,coln,pflag):
         g.tprinter('running data_plotter for '+detector+' detector',pflag)
-
+        plt.ion()
+        plt.clf()
         x = self.data[:,0]
         y = self.data[:,coln]
        
@@ -204,7 +206,7 @@ class data_math():
         plt.plot(x[1:-1:100],y[1:-1:100], 'r-')
         
 #        plt.axis([0, 6, 0, 20])
-        plt.show()
+        plt.draw()
  
         # Still needed modules: integrator(DONE), FWHM, multiplication mods. 
         #for amplification and attenuation
@@ -226,11 +228,11 @@ class data_math():
         
         
         
-        max_sig = self.max_finder(detector,coln,pflag)
+#         max_sig = self.max_finder(detector,coln,0)
+#         
+#         max_sig_pos = np.where(self.data[:,coln]==max_sig)[0][0]
         
-        max_sig_pos = np.where(self.data[:,coln]==max_sig)[0][0]
-        
-        g.printer(max_sig_pos,pflag)
+#         g.printer(max_sig_pos,pflag)
         
         dtVector = np.diff(self.data[2000:10000, 0])
         
@@ -240,7 +242,7 @@ class data_math():
         # time interval between two data points
         dt = np.mean(dtVector)
         # maximum signal
-        max_sig = self.max_finder(detector,coln,pflag)
+        max_sig = self.max_finder(detector,coln,0)
         # maximum signal position in data 
         max_sig_pos = np.where(self.data[:,coln]==max_sig)[0][0]
         
@@ -272,8 +274,8 @@ class data_math():
         
         # some output in console    
         g.printer('integration interval: '+str(lower_limit+upper_limit)+' ns',pflag)
-        g.printer('integration time before maximum: '+str(lower_limit),pflag)
-        g.printer('integration time after maximum: '+str(upper_limit),pflag)
+        g.printer('integration time before maximum: '+str(lower_limit)+' ns',pflag)
+        g.printer('integration time after maximum: '+str(upper_limit)+' ns',pflag)
         g.printer('dt:'+str(dt)+'s',pflag)
         g.printer('scope time at max. sig.: '+str(self.data[max_sig_pos,0]),pflag)
         g.printer('scope time for lower limit: '+str(self.data[low,0]),pflag)
@@ -369,7 +371,7 @@ class data_math():
         return fwhm_S * Ts
         
         
-        
+    # by giving the attenuation factor in db it calculates the real signal height     
     def amp_calc(self,detector,coln,amp,pflag):
         g.tprinter('running amp_clac for '+detector+' detector',pflag)
         g.printer('the amplification/attenuation is '+str(int(amp))+' dB',pflag)
@@ -377,13 +379,48 @@ class data_math():
         g.printer('the resulting factor is: '+str(out),pflag)
         return out
     
+    # by giving the attenuation factor (attenuator (and shunt)) it will correct signal in self.data to the real height
     def data_amp_corr(self,detector,coln,amp_fac,pflag):
         g.tprinter('running data_amp_corr for '+detector+' detector',pflag)
         g.printer('correcting data with the amp_fac of '+str(int(amp_fac)),pflag)
         for i in self.data:
                 i[coln] = i[coln]*(amp_fac)
-               
+    
+    # by giving if a shunt was used it will return the shunt attenuation factor shunt_att            
+    def shunt_calc(self,detector,coln,shunt,pflag):
+        g.tprinter('running shunt_calc for '+detector+' detector',pflag)  
         
+        if int(shunt) == 1:
+            g.printer('shunt used',pflag)
+            
+            shunt_att = 50
+            g.printer('shunt att:'+str(shunt_att),pflag)
+        else:
+            g.printer('no shunt used',pflag)
+            shunt_att = 1
+            
+        return shunt_att
+    
+    # by giving the integral the charge can be calculated with the circuit resistance
+    # fac is a conversion factor, might be important for the WC
+    def charge_calculator(self,detector,coln,integral,fac,pflag):
+        g.tprinter('running charge calculator for '+detector+' detector',pflag)
+        # resistance of the circuit 
+        res = 50.
+        charge = fac*float(integral) / res
+        g.printer('the measured charge is: '+str(charge),pflag)   
+        return charge 
+    
+    # by giving the charge and a conversion factor the number of particles is calculated
+    def ppb_calc(self,detector,coln,charge,conversion,pflag):
+        g.tprinter('running ppb_calc for '+detector+' detector',pflag)
+        g.printer('the measured charge is: '+str(charge),pflag)
+        g.printer('the conversion factor for particle per coulomb is:'+str(conversion),pflag)
+        
+        ppb = round(float(charge)/float(conversion))
+        g.printer('the calculated number of particle per shot is :'+str(ppb),pflag)
+        return ppb
+    
     # sets data column to zeros        
     def set_data_zero(self):
         for i in self.data:
