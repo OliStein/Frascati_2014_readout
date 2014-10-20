@@ -88,7 +88,8 @@ class data_math():
     
     # Moving average filter implemented with a fft method. 
     #    ~100 times faster than achievable with median filter.
-    def moving_average(self, a, n=3, end = 20000):
+    def moving_average(self, a, n= 3, end = 20000):
+#         g.tprinter('running moving average for ',pflag)
         kernel = np.ones(n)/float(n)
         out = sig.fftconvolve(a,kernel,mode = 'same')
         med = np.median(a[-end:])
@@ -97,6 +98,12 @@ class data_math():
         out[-n:] = med
         return out
     
+    def flatten_data(self,detector,coln,window,pflag):
+        g.tprinter('running flatten_data for '+detector+' detector',pflag)
+        f_data = self.moving_average(self.data[:,coln],window,20000)
+        self.data[:,coln] = f_data
+        
+        
     # makes data as object of math_class
     def data_in(self,data,pflag):
         g.tprinter('running data_in',pflag)

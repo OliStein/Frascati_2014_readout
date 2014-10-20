@@ -179,10 +179,10 @@ class data():
         # Header with the column names
         self.ana_list = np.array([['id','meas. type','run','date','detector','type','xpos','ypos','ref.','ref. DAQ','att. ref.','volt. ref.','diamond',
                           'att. diamond','shunt','volt. dBLM','scpr11','scpr12','scpr21','scpr22','udc','meas. nr.','time',
-                          'WC','WC sig.','WC offset','WC noise','WC max. sig.','WC SNR','WC FWHM','WC int.','WC charge','WC ppb',
-                          'icBLM','icBLM sig.','icBLM offset','icBLM noise','icBLM max. sig.','icBLM SNR','icBLM max sig. att. corr.','icBLM FWHM','icBLM int.','icBLM int. att. corr.','icBLM charge sig.','icBLM ppb',
+                          'WC','WC sig.','WC offset','WC noise','WC smoothed','WC max. sig.','WC SNR','WC FWHM','WC int.','WC charge','WC ppb',
+                          'icBLM','icBLM sig.','icBLM offset','icBLM noise','icBLM smoothed','icBLM max. sig.','icBLM SNR','icBLM max sig. att. corr.','icBLM FWHM','icBLM int.','icBLM int. att. corr.','icBLM charge sig.','icBLM ppb',
                           'keithley data','keithley timestamp',
-                          'dBLM','dBLM sig.','dBLM offset','dBLM noise','dBLM max. sig.','dBLM SNR','dBLM max sig. att. corr.','dBLM FWHM','dBLM int.','dBLM int. att. corr.','dBLM charge sig.',
+                          'dBLM','dBLM sig.','dBLM offset','dBLM noise','dBLM smoothed','dBLM max. sig.','dBLM SNR','dBLM max sig. att. corr.','dBLM FWHM','dBLM int.','dBLM int. att. corr.','dBLM charge sig.',
                           'analyzed','file']])
         # Extends the list with the found data files and pathes
         # Analysis results are set to zero in the beginning
@@ -268,7 +268,7 @@ class data():
             self.ana_file = 0
             sys.exit('ana_file not a list or defined')
     
-        if len(self.ana_file[0]) == 60:
+        if len(self.ana_file[0]) == 63:
             
             self.ana_check = 1
             

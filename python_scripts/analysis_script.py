@@ -170,6 +170,13 @@ for i in d.ana_file[1:]:
             
                 i[c.find_val(det+' noise',header,0)] = m.noise_finder(det,coln,1)
                 
+                m.data_plotter(det,coln,1)
+#                 g.printer('moving average bla',1)
+                m.flatten_data(det,coln,500,1)
+                
+                i[c.find_val(det+' smoothed',header,0)] = 1
+#                 print len(m.moving_average(m.data[:,1],500,20000))
+                print len(m.data[:,0]) 
 #                 # Added to find the integral value.
 #                 i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,10,90,1)
                 
