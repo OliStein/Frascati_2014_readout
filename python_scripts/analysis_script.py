@@ -148,6 +148,9 @@ for i in d.ana_file[1:]:
                 # Added to find the integral value.
                 i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,1)
                 
+                # Added to find the fwhm value.
+                i[c.find_val(det+' FWHM',header,0)] = m.fwhm(det,coln,1)
+                
 #                 m.data_plotter(det,coln,1)
                 # detector specific routines
                 # not all detectors have a amplification or attenuation
