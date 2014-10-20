@@ -313,6 +313,63 @@ class data_math():
         g.printer('Integration results over complete signal: '+str(integral_2)+' Vs', pflag)
         return integral
         
+        
+        
+        
+        #FWHM finder. Must be applied after the averaging!
+    def fwhm(self, detector, coln, pflag):
+        g.tprinter('Running fwhm estimator on '+detector+' detector', pflag)
+        sigin = self.data[:,coln]
+        
+        maxi = np.max(sigin)
+        index = 0
+        for i in sigin:
+            if i == maxi:
+                maxindex = index
+                break
+            index = index + 1
+        #Search first boundary from within:
+        while sigin[index] > maxi / 2:
+            index = index - 1
+        IntFirst = index
+        #Search last boundary from within:
+        index = maxindex
+        while sigin[index] > maxi / 2:
+            index = index + 1
+        IntLast = index
+
+        #Search first boundary from outside:
+        index = 0
+        while sigin[index] < maxi / 2:
+            index = index + 1
+        ExtFirst = index
+
+        #Search last boundary from outside:
+        index = len(sigin)-1000
+        while sigin[index] < maxi / 2:
+            index = index - 1
+        ExtLast = index
+
+        #Conclusion: The mean between the int/ext estimators is used as the fwhm estimator
+        fwhm_S = (ExtLast + IntLast)/2 - (ExtFirst + IntFirst)/2
+        
+        #Triggering warnings on inaccurate estimators.
+        ErrorFirst = (ExtFirst - IntFirst) / float(fwhm_S) * 100
+        ErrorFirstWarning = '''WARNING. The accuracy of the first flank estimators
+        vary with more than 2%. The difference is '''
+        g.printer(ErrorFirstWarning+ str(ErrorFirst) + '%', ErrorFirst>=2)
+        
+        ErrorLast = (ExtLast - IntLast) / float(fwhm_S) * 100
+        ErrorLastWarning = '''WARNING. The accuracy of the latter flank estimators
+        vary with more than 10%. The difference is '''
+        g.printer(ErrorLastWarning+ str(ErrorLast) + '%', ErrorLast>=10)
+        
+        Ts = np.mean(np.diff(self.data[0:500,0]))
+        g.printer('FWHM estimated:'+ str(fwhm_S * Ts) + 's', pflag)
+        return fwhm_S * Ts
+        
+        
+        
     def amp_calc(self,detector,coln,amp,pflag):
         g.tprinter('running amp_clac for '+detector+' detector',pflag)
         g.printer('the amplification/attenuation is '+str(int(amp))+' dB',pflag)
