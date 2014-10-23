@@ -41,31 +41,31 @@ class data_selector():
         return out 
         
     
-    def selector(self,detector,data_header,pflag):
+    def selector(self,detector,data_header,det_def_list,pflag):
         g.tprinter('running selector',pflag)
         
         col = 0
-        if detector == 'dBLM':
+        if detector == det_def_list[0,0]:
             try:
-                col  = np.where(data_header == 'Channel 1')[0][0]
-                g.printer('dBLM data, Channel 1 found',pflag)
+                col  = np.where(data_header == det_def_list[0,1])[0][0]
+                g.printer(det_def_list[0,0]+' data, '+det_def_list[0,1]+' found',pflag)
             except:
-                g.printer('no data in Channel 1, no dBLM',pflag)
+                g.printer('no data in '+det_def_list[0,1]+', no '+det_def_list[0,0],pflag)
                 self.sel_flag = 0
                 
-        elif detector == 'icBLM':
+        elif detector == det_def_list[1,0]:
             try:
-                col  = np.where(data_header == 'Channel 4')[0][0]
-                g.printer('icBLM data, Channel 3 found',pflag)
+                col  = np.where(data_header == det_def_list[1,1])[0][0]
+                g.printer(det_def_list[1,0]+' data, '+det_def_list[1,1]+' found',pflag)
             except:
-                g.printer('no data in Channel 3, no icBLM',pflag)
+                g.printer('no data in '+det_def_list[1,1]+', no '+det_def_list[1,0],pflag)
                 self.sel_flag = 0
-        elif detector == 'WC':
+        if detector == det_def_list[2,0]:
             try:
-                col  = np.where(data_header == 'Channel 3')[0][0]
-                g.printer('WC data, Channel 4 found',pflag)
+                col  = np.where(data_header == det_def_list[2,1])[0][0]
+                g.printer(det_def_list[2,0]+' data, '+det_def_list[2,1]+' found',pflag)
             except:
-                g.printer('no data in Channel 4, no WC',pflag)
+                g.printer('no data in '+det_def_list[2,1]+', no '+det_def_list[2,0],pflag)
                 self.sel_flag = 0
         else:
             pass
@@ -191,19 +191,28 @@ class data_math():
         return noise
     
     # plots data
-    def data_plotter(self,detector,coln,pflag):
+    def data_plotter(self,detector,coln,data_header,det_def_list,pflag):
         g.tprinter('running data_plotter for '+detector+' detector',pflag)
         plt.ion()
         plt.clf()
-        x = self.data[:,0]
-        y = self.data[:,coln]
-       
+        interval = 200
+        f, axarr = plt.subplots(3, sharex = True)
+        x = self.data[1:-1:interval,0]
+        y1 = self.data[1:-1:interval,sel.selector('dBLM',data_header,det_def_list,1)]
+        y2 = self.data[1:-1:interval,sel.selector('icBLM',data_header,det_def_list,1)]
+        y3 = self.data[1:-1:interval,sel.selector('WC',data_header,det_def_list,1)]
+        axarr[0].plot(x,y1,'r-')
+        axarr[0].set_title('dBLM')
+        axarr[1].plot(x,y2,'b-')
+        axarr[1].set_title('icBLM data')
+        axarr[2].plot(x,y3,'g-')
+        axarr[2].set_title('WC data')
         # plots only every 100th data point for speed optimization
         
-        plt.xlabel('time (s)')
-        plt.ylabel('signal (V)')
-        plt.title('Data of '+str(detector)+' detector')
-        plt.plot(x[1:-1:100],y[1:-1:100], 'r-')
+#         plt.xlabel('time (s)')
+#         plt.ylabel('signal (V)')
+#         plt.title('Data of '+str(detector)+' detector')
+#         plt.plot(x[1:-1:100],y[1:-1:100], 'r-')
         
 #        plt.axis([0, 6, 0, 20])
         plt.draw()
@@ -254,9 +263,11 @@ class data_math():
         
         # upper interval in data points from the max. sig. pos.
         up_interval = int(round((upper_limit*10**(-9))/dt))
+        g.printer(up_interval,pflag)
+        g.printer(len(self.data),pflag)
         # upper interval position in data list
         up = max_sig_pos + up_interval
-        
+        g.printer(up,pflag)
         # checks if the interval limits lay outside the list
         # lower limit < 0
         # upper limit > len(self.data)
@@ -267,7 +278,8 @@ class data_math():
             pass
         
         if up > len(self.data):
-            up = len(self.data)
+            up = len(self.data)-1
+            g.printer('setting upper integral limit to len(m.data):'+str(len(self.data)),pflag)
         else:
             pass
         

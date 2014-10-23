@@ -119,9 +119,9 @@ class csv_list():
         data_comp = []
         try:
             data_comp = self.csv_file_loader(file_path,file_name,0)
-            g.printer('data file successfully loaded',1)
+            g.printer('data file successfully loaded',pflag)
         except:
-            g.printer('no file loaded',1)
+            g.printer('no file loaded',pflag)
             sys.exit('program stop')
             
         return data_comp   
@@ -147,12 +147,12 @@ class csv_list():
         else:
             pass
         for i in ana_file[1:]:
-            g.printer(float(i[self.find_val('analyzed',header,0)])==1.,pflag)
+#             g.printer(float(i[self.find_val('analyzed',header,0)])==1.,pflag)
             if float(i[self.find_val('analyzed',header,0)])!=1. or analyze_all == 1:
                 naf +=1
             else:
                 pass
         
-        g.printer(str(naf)+' of '+str(len(ana_file)-1)+' data sets have to be analyzed',1)
+        g.printer(str(naf)+' of '+str(len(ana_file)-1)+' data sets have to be analyzed',pflag)
         
         return naf    

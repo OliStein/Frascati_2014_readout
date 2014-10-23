@@ -159,7 +159,7 @@ class data():
         
     # Function for finding the data files in the \\raw_data path and writing the info to self.data_list
     def find_data(self,path,pflag):
-        g.tprinter('running find_data',1)
+        g.tprinter('running find_data',pflag)
         self.data_list = []
         for paths,dirs,files in os.walk(os.path.join(path,'raw_data')):
             
