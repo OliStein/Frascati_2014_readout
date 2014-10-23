@@ -15,6 +15,7 @@ import pickle
 from time import strftime, localtime
 import time
 import glob
+import calendar
 import matplotlib.pyplot as plt
 import scipy.signal as sig
 from pylab import *
@@ -96,6 +97,22 @@ class data_math():
         out[:n] = med
         out[-n:] = med
         return out
+    
+    
+    # Binary search algorithm:    
+    def binarysearch(A, value, imax):
+        imin = 0
+        while imax >= imin:
+            imid = int((imax+imin)/2)
+            if A[imid] > value:
+                imax = imid - 1
+            elif A[imid] < value:
+                imin = imid + 1
+            else:
+                break
+        return imid
+    
+    
     
     # makes data as object of math_class
     def data_in(self,data,pflag):
@@ -256,4 +273,39 @@ class data_math():
     def set_data_zero(self):
         for i in self.data:
             i[1] = 0
+            
+            
+    def UTCtimestamp(self, dateColumn, timeColumn, pflag):
+        g.tprinter('Generating UTC timestamp',pflag)
+        g.printer('Read date is: '+str(dateColumn),pflag)
+        g.printer('Read time is: '+str(timeColumn),pflag)
+        if len(str(dateColumn)) == 7:
+            date = '0'+str(dateColumn)
+        elif len(str(dateColumn)) == 8:
+            date = str(dateColumn)
+        else:
+            date = str(dateColumn)
+            print 'Fatal error occured in length of date stamp:'
+            print date+' with length '+str(len(date))
+            sys.exit('0')
+        dstamp = calendar.timegm(time.strptime(date,'%d%m%Y'))
+        #Reading the time stamp
+        #  The 1970 is added to have a correct reference to the unix 
+        #   epoch timestamp.
+        tstamp = calendar.timegm(
+                time.strptime('1970:'+str(timeColumn),
+                         '%Y:%H:%M:%S'))
+        g.printer('The calculated UTC timestamp is '+str(dstamp+tstamp),pflag)
+        return dstamp+tstamp
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
             

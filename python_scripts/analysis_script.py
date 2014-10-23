@@ -25,8 +25,9 @@ c = csv_list()
 g = gen()
 # <<<<<<< HEAD
 
-cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
+#cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
 
+cwd = '/home/csoerens/Desktop/python/Frascati_Data_Analysis'
 sel = data_selector()
 m  = data_math() 
 
@@ -38,7 +39,7 @@ data_path = os.path.join(cwd,'data')
 # print data_path
 
 
-# cwd = '/home/csoerens/Desktop/python/Frascati_Data_Analysis'
+cwd = '/home/csoerens/Desktop/python/Frascati_Data_Analysis'
 # cwd = 'C:\\Github'
 
 sel = data_selector()
@@ -81,7 +82,7 @@ header = d.ana_file[0]
 
 
 # set to one if all files to be analyzed
-analyze_all = 0
+analyze_all = 1
 
 # checks the number of files to be analyzed
 naf = c.tba(d.ana_file,analyze_all,1)
@@ -139,6 +140,9 @@ for i in d.ana_file[1:]:
         
         # writes the time from the scope file into the analysis file
         i[c.find_val('time',header,0)] = data_head[18,2]
+        
+        
+        
         # detector loop
         # runs through the coloumns in the data list and analyses the data
         det_list = ['icBLM','dBLM','WC']
@@ -164,6 +168,8 @@ for i in d.ana_file[1:]:
                 
                 # gives the signal to noise ratio and writes it to the ana_file 
                 i[c.find_val(det+' SNR',header,0)] = m.signal_to_noise(det,coln,1)
+                
+                #MA-filter of data.
                 
                 # gives the max data value and writes it to the ana_file
                 i[c.find_val(det+' max. sig.',header,0)] = m.max_finder(det,coln,1)
@@ -203,7 +209,12 @@ for i in d.ana_file[1:]:
             else:
                 pass
         
-
+        # writes the UTC timestamp
+        print i[c.find_val('date',header,0)]
+        #print d.ana_file
+        dateColumn = i[c.find_val('date',header,0)]
+        timeColumn = i[c.find_val('time',header,0)]
+        i[c.find_val('UTCtime',header,0)] = m.UTCtimestamp(dateColumn, timeColumn, 1)
 
         # sets the marker in the ana_file list to analyzed
         i[c.find_val('analyzed',header,0)] = 1

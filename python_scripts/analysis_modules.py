@@ -178,7 +178,7 @@ class data():
         ana_file = 'ana_file.csv'
         # Header with the column names
         self.ana_list = np.array([['id','meas. type','run','date','detector','type','xpos','ypos','ref.','ref. DAQ','att. ref.','volt. ref.','diamond',
-                          'att. diamond','shunt','volt. dBLM','scpr11','scpr12','scpr21','scpr22','udc','meas. nr.','time',
+                          'att. diamond','shunt','volt. dBLM','scpr11','scpr12','scpr21','scpr22','udc','meas. nr.','time', 'UTCtime',
                           'WC','WC sig.','WC offset','WC noise','WC max. sig.','WC SNR','WC FWHM','WC int.','WC charge','WC ppb',
                           'icBLM','icBLM sig.','icBLM offset','icBLM noise','icBLM max. sig.','icBLM SNR','icBLM max sig. att. corr.','icBLM FWHM','icBLM int.','icBLM int. att. corr.','icBLM charge sig.','icBLM ppb',
                           'dBLM','dBLM sig.','dBLM offset','dBLM noise','dBLM max. sig.','dBLM SNR','dBLM max sig. att. corr.','dBLM FWHM','dBLM int.','dBLM int. att. corr.','dBLM charge sig.',
@@ -267,7 +267,7 @@ class data():
             self.ana_file = 0
             sys.exit('ana_file not a list or defined')
     
-        if len(self.ana_file[0]) == 58:
+        if len(self.ana_file[0]) == 59:
             
             self.ana_check = 1
             
