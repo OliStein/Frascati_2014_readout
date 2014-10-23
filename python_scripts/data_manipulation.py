@@ -17,6 +17,7 @@ import time
 import glob
 import calendar
 import matplotlib.pyplot as plt
+
 import scipy.signal as sig
 from pylab import *
 
@@ -55,14 +56,14 @@ class data_selector():
                 
         elif detector == 'icBLM':
             try:
-                col  = np.where(data_header == 'Channel 3')[0][0]
+                col  = np.where(data_header == 'Channel 4')[0][0]
                 g.printer('icBLM data, Channel 3 found',pflag)
             except:
                 g.printer('no data in Channel 3, no icBLM',pflag)
                 self.sel_flag = 0
         elif detector == 'WC':
             try:
-                col  = np.where(data_header == 'Channel 4')[0][0]
+                col  = np.where(data_header == 'Channel 3')[0][0]
                 g.printer('WC data, Channel 4 found',pflag)
             except:
                 g.printer('no data in Channel 4, no WC',pflag)
@@ -89,7 +90,8 @@ class data_math():
     
     # Moving average filter implemented with a fft method. 
     #    ~100 times faster than achievable with median filter.
-    def moving_average(self, a, n=3, end = 20000):
+    def moving_average(self, a, n= 3, end = 20000):
+#         g.tprinter('running moving average for ',pflag)
         kernel = np.ones(n)/float(n)
         out = sig.fftconvolve(a,kernel,mode = 'same')
         med = np.median(a[-end:])
@@ -97,7 +99,7 @@ class data_math():
         out[:n] = med
         out[-n:] = med
         return out
-    
+
     
     # Binary search algorithm:    
     def binarysearch(A, value, imax):
@@ -112,8 +114,13 @@ class data_math():
                 break
         return imid
     
-    
-    
+   
+    def flatten_data(self,detector,coln,window,pflag):
+        g.tprinter('running flatten_data for '+detector+' detector',pflag)
+        f_data = self.moving_average(self.data[:,coln],window,20000)
+        self.data[:,coln] = f_data
+        
+
     # makes data as object of math_class
     def data_in(self,data,pflag):
         g.tprinter('running data_in',pflag)
@@ -127,7 +134,7 @@ class data_math():
     
     # finds  minimum of data
     def min_finder(self,detector,coln,pflag):
-        g.tprinter('running max_finder for '+detector+' detector',pflag)
+        g.tprinter('running min_finder for '+detector+' detector',pflag)
         input = self.data[:,coln] 
         return np.amin(input)
     
@@ -135,7 +142,7 @@ class data_math():
     def inverter(self,detector,coln,fac,pflag):
         g.tprinter('running inverter for '+detector+' detector',pflag)
         # data will be inverted if the absolute min value is fac times larger then the max value 
-        if self.max_finder(detector,coln,pflag) <= fac*abs(self.min_finder(detector,coln,pflag)):
+        if self.max_finder(detector,coln,0) <= fac*abs(self.min_finder(detector,coln,0)):
             for i in self.data:
                 i[coln] = i[coln]*(-1) 
         else:
@@ -143,7 +150,7 @@ class data_math():
         
     # tests if the signal to noise ratio is larger than SNRmin    
     def signal_indicator(self,detector,coln,pflag):
-        g.tprinter('running signal_indicator for'+detector+' detector',pflag)
+        g.tprinter('running signal_indicator for '+detector+' detector',pflag)
         SNRmin = 2
         SNR = self.signal_to_noise(detector, coln, 0)
         if SNR >= SNRmin:
@@ -202,39 +209,107 @@ class data_math():
     # plots data
     def data_plotter(self,detector,coln,pflag):
         g.tprinter('running data_plotter for '+detector+' detector',pflag)
-
+        plt.ion()
+        plt.clf()
         x = self.data[:,0]
         y = self.data[:,coln]
        
         # plots only every 100th data point for speed optimization
+        
+        plt.xlabel('time (s)')
+        plt.ylabel('signal (V)')
+        plt.title('Data of '+str(detector)+' detector')
         plt.plot(x[1:-1:100],y[1:-1:100], 'r-')
+        
 #        plt.axis([0, 6, 0, 20])
-        plt.show()
+        plt.draw()
  
         # Still needed modules: integrator(DONE), FWHM, multiplication mods. 
         #for amplification and attenuation
         #
         
-    def integrator(self, detector, coln, pflag):
+    # module for finding the nearest value in a list  
+#     def find_nearest(self,array,value):
+#         idx = (np.abs(array-value)).argmin()
+#         return array[idx] 
+       
+    def integrator(self, detector, coln,lower_limit,upper_limit,pflag):
         g.tprinter('Running integrator on '+detector+' detector', pflag)
-        integral = 0.0
         
-        #The estimator for the timestep is the mean of the change of the time.
+        
+        # The estimator for the timestep is the mean of the change of the time.
         # This should be fairly sound. It's probably not necessary with that 
         # large a samplespace in time, but here goes. Printing the standard
         # deviation, just as a check. - Should be Commented out later.
+        
+        
+        
+#         max_sig = self.max_finder(detector,coln,0)
+#         
+#         max_sig_pos = np.where(self.data[:,coln]==max_sig)[0][0]
+        
+#         g.printer(max_sig_pos,pflag)
         
         dtVector = np.diff(self.data[2000:10000, 0])
         
         #g.printer('Standard deviation of timesteps: '+str(np.std(dtVector)),pflag)
         #    -   It was seen that the standard deviation was ~e-24. 
         #        That's good enough.
-        
+        # time interval between two data points
         dt = np.mean(dtVector)
-        for i in self.data[:,coln]:
+        # maximum signal
+        max_sig = self.max_finder(detector,coln,0)
+        # maximum signal position in data 
+        max_sig_pos = np.where(self.data[:,coln]==max_sig)[0][0]
+        
+        # lower interval in data points from the max. sig. pos.
+        low_interval = int(round((lower_limit*10**(-9))/dt))
+        
+        # lower interval position in data list
+        low = max_sig_pos - low_interval
+        
+        # upper interval in data points from the max. sig. pos.
+        up_interval = int(round((upper_limit*10**(-9))/dt))
+        # upper interval position in data list
+        up = max_sig_pos + up_interval
+        
+        # checks if the interval limits lay outside the list
+        # lower limit < 0
+        # upper limit > len(self.data)
+        
+        if low < 0:
+            low = 0
+        else:
+            pass
+        
+        if up > len(self.data):
+            up = len(self.data)
+        else:
+            pass
+        
+        
+        # some output in console    
+        g.printer('integration interval: '+str(lower_limit+upper_limit)+' ns',pflag)
+        g.printer('integration time before maximum: '+str(lower_limit)+' ns',pflag)
+        g.printer('integration time after maximum: '+str(upper_limit)+' ns',pflag)
+        g.printer('dt:'+str(dt)+'s',pflag)
+        g.printer('scope time at max. sig.: '+str(self.data[max_sig_pos,0]),pflag)
+        g.printer('scope time for lower limit: '+str(self.data[low,0]),pflag)
+        g.printer('scope time for upper limit: '+str(self.data[up,0]),pflag)
+#         g.printer(max_sig_pos,pflag)
+#         g.printer(dt,pflag)
+        
+        # integration with limits
+        integral = 0.0
+        for i in self.data[low:up,coln]:
             integral = integral + i*dt
+        
+        # integration WITHOUT limits
+        integral_2 = 0.0    
+        for i in self.data[:,coln]:
+            integral_2 = integral_2 + i*dt    
             
-            #Logbook day two. This is a bit of clusterfuck.
+            # Logbook day two. This is a bit of clusterfuck.
             # When I run the integration, it invariably spits out an answer which is
             # roughly the orders of magnitude smaller than it should be, compared to
             # the analog calculations I've made with the notebook, and integrating
@@ -245,16 +320,74 @@ class data_math():
             #I guess my sanity has always been questionable, and it is a bit after
             # six, so the daylight is not really an applicable concept anymore. 
             
-            #Logbook day three. I'm a total and utter cock. I really should get
+            # Logbook day three. I'm a total and utter cock. I really should get
             # myself together and stop coding, when it gets too late. All of the
             # sudden I'm forgetting how to fucking index a 2D np array. I guess that
             # is the limit of my mental capacity. It doesn't look great. 
             # Seriously doubting my sanity again. Someone should do something. Soon.
             # It works now, by the way. 
             
-        g.printer('Integration results in: '+str(integral)+' Vs', pflag)
+        g.printer('Integration results within the limits: '+str(integral)+' Vs', pflag)
+        g.printer('Integration results over complete signal: '+str(integral_2)+' Vs', pflag)
         return integral
         
+        
+        
+        
+        #FWHM finder. Must be applied after the averaging!
+    def fwhm(self, detector, coln, pflag):
+        g.tprinter('Running fwhm estimator on '+detector+' detector', pflag)
+        sigin = self.data[:,coln]
+        
+        maxi = np.max(sigin)
+        index = 0
+        for i in sigin:
+            if i == maxi:
+                maxindex = index
+                break
+            index = index + 1
+        #Search first boundary from within:
+        while sigin[index] > maxi / 2:
+            index = index - 1
+        IntFirst = index
+        #Search last boundary from within:
+        index = maxindex
+        while sigin[index] > maxi / 2:
+            index = index + 1
+        IntLast = index
+
+        #Search first boundary from outside:
+        index = 0
+        while sigin[index] < maxi / 2:
+            index = index + 1
+        ExtFirst = index
+
+        #Search last boundary from outside:
+        index = len(sigin)-1000
+        while sigin[index] < maxi / 2:
+            index = index - 1
+        ExtLast = index
+
+        #Conclusion: The mean between the int/ext estimators is used as the fwhm estimator
+        fwhm_S = (ExtLast + IntLast)/2 - (ExtFirst + IntFirst)/2
+        
+        #Triggering warnings on inaccurate estimators.
+        ErrorFirst = (ExtFirst - IntFirst) / float(fwhm_S) * 100
+        ErrorFirstWarning = '''WARNING. The accuracy of the first flank estimators
+        vary with more than 2%. The difference is '''
+        g.printer(ErrorFirstWarning+ str(ErrorFirst) + '%', ErrorFirst>=2)
+        
+        ErrorLast = (ExtLast - IntLast) / float(fwhm_S) * 100
+        ErrorLastWarning = '''WARNING. The accuracy of the latter flank estimators
+        vary with more than 10%. The difference is '''
+        g.printer(ErrorLastWarning+ str(ErrorLast) + '%', ErrorLast>=10)
+        
+        Ts = np.mean(np.diff(self.data[0:500,0]))
+        g.printer('FWHM estimated:'+ str(fwhm_S * Ts) + 's', pflag)
+        return fwhm_S * Ts
+        
+        
+    # by giving the attenuation factor in db it calculates the real signal height     
     def amp_calc(self,detector,coln,amp,pflag):
         g.tprinter('running amp_clac for '+detector+' detector',pflag)
         g.printer('the amplification/attenuation is '+str(int(amp))+' dB',pflag)
@@ -262,13 +395,48 @@ class data_math():
         g.printer('the resulting factor is: '+str(out),pflag)
         return out
     
+    # by giving the attenuation factor (attenuator (and shunt)) it will correct signal in self.data to the real height
     def data_amp_corr(self,detector,coln,amp_fac,pflag):
         g.tprinter('running data_amp_corr for '+detector+' detector',pflag)
         g.printer('correcting data with the amp_fac of '+str(int(amp_fac)),pflag)
         for i in self.data:
                 i[coln] = i[coln]*(amp_fac)
-               
+    
+    # by giving if a shunt was used it will return the shunt attenuation factor shunt_att            
+    def shunt_calc(self,detector,coln,shunt,pflag):
+        g.tprinter('running shunt_calc for '+detector+' detector',pflag)  
         
+        if int(shunt) == 1:
+            g.printer('shunt used',pflag)
+            
+            shunt_att = 50
+            g.printer('shunt att:'+str(shunt_att),pflag)
+        else:
+            g.printer('no shunt used',pflag)
+            shunt_att = 1
+            
+        return shunt_att
+    
+    # by giving the integral the charge can be calculated with the circuit resistance
+    # fac is a conversion factor, might be important for the WC
+    def charge_calculator(self,detector,coln,integral,fac,pflag):
+        g.tprinter('running charge calculator for '+detector+' detector',pflag)
+        # resistance of the circuit 
+        res = 50.
+        charge = fac*float(integral) / res
+        g.printer('the measured charge is: '+str(charge),pflag)   
+        return charge 
+    
+    # by giving the charge and a conversion factor the number of particles is calculated
+    def ppb_calc(self,detector,coln,charge,conversion,pflag):
+        g.tprinter('running ppb_calc for '+detector+' detector',pflag)
+        g.printer('the measured charge is: '+str(charge),pflag)
+        g.printer('the conversion factor for particle per coulomb is:'+str(conversion),pflag)
+        
+        ppb = round(float(charge)/float(conversion))
+        g.printer('the calculated number of particle per shot is :'+str(ppb),pflag)
+        return ppb
+    
     # sets data column to zeros        
     def set_data_zero(self):
         for i in self.data:

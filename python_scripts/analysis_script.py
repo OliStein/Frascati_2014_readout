@@ -64,14 +64,14 @@ d.find_data(data_path,1)
 
 
 
-# d.ana_file_deleter(data_path,1)
+d.ana_file_deleter(data_path,1)
 
 d.ana_file_loader(data_path,1)
 d.ana_file_loader(data_path,1)
 d.ana_file_sync(1) 
-
+print len(d.ana_file[0])
 d.ana_file_checker(1)
-# print len(d.ana_file)
+# print len(d.ana_file[0])
 d.ana_file_saver(data_path,d.ana_file,1,'space',1,1)
 
 # Stop here
@@ -155,6 +155,14 @@ for i in d.ana_file[1:]:
                 # is set to 1 if there is data in the scope file
                 i[c.find_val(det,header,0)] = 1
                 
+                # smoothing the data
+                # moving_average correction
+                # indicates in the analysis file if data is smoothed
+                m.flatten_data(det,coln,500,1)
+                
+                i[c.find_val(det+' smoothed',header,0)] = 1
+                
+                
                 # inverts the data if the min value is 2 times smaller than the maximum value
                 # the factor can be changed
                 m.inverter(det,coln,2,1)
@@ -176,10 +184,12 @@ for i in d.ana_file[1:]:
             
                 i[c.find_val(det+' noise',header,0)] = m.noise_finder(det,coln,1)
                 
-                # Added to find the integral value.
-                i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,1)
-                
+
 #                 m.data_plotter(det,coln,1)
+
+                # Added to find the fwhm value.
+                i[c.find_val(det+' FWHM',header,0)] = m.fwhm(det,coln,1)
+                
                 # detector specific routines
                 # not all detectors have a amplification or attenuation
                 
@@ -187,25 +197,55 @@ for i in d.ana_file[1:]:
                 if  det == 'icBLM':
                     # looks up the attenuation/amplification for the specific detector
                     amp = m.amp_calc(det,coln,i[c.find_val('att. ref.',header,0)],1)
-                    g.printer(amp,1)
-                    i[c.find_val('icBLM max sig. att. corr.',header,0)] = amp*float(i[c.find_val('icBLM max. sig.',header,0)])
+                    shunt_att = 1
+#                     g.printer(amp,1)
                     
-
+                    i[c.find_val(det+' max sig. att. corr.',header,0)] = shunt_att*amp*float(i[c.find_val('icBLM max. sig.',header,0)])
                     # multiplies the data with the correction factor
-                    m.data_amp_corr(det,coln,amp,1)
-                
+                    
+#                     m.data_plotter(det,coln,1)
+                    # icBLM integration limits
+                    lo_limit = 10
+                    up_limit = 90
+                    i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,lo_limit,up_limit,1)
+                    i[c.find_val(det+' int. att. corr.',header,0)] = shunt_att*amp*float(i[c.find_val(det+' int.',header,0)])
+                    g.printer(i[c.find_val(det+' max sig. att. corr.',header,0)],1)
+                    i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int. att. corr.',header,0)],1,1)
+                    conversion  = float(1.602*10**(-19))
+                    i[c.find_val(det+' ppb',header,0)] = m.ppb_calc(det,coln,i[c.find_val(det+' charge sig.',header,0)],conversion,1)
+                    # multiplies the data with the correction factor
+#                     m.data_amp_corr(det,coln,amp,1)
                 elif det == 'dBLM':
                     amp = m.amp_calc(det,coln,i[c.find_val('att. diamond',header,0)],1)
+                    shunt_att = m.shunt_calc(det, coln, i[c.find_val('shunt',header,0)], 1)
                     
-                    i[c.find_val('dBLM max sig. att. corr.',header,0)] = amp*float(i[c.find_val('dBLM max. sig.',header,0)])
+                    i[c.find_val(det+' max sig. att. corr.',header,0)] = shunt_att*amp*float(i[c.find_val(det+' max. sig.',header,0)])
                     
                     # multiplies the data with the correction factor
-                    m.data_amp_corr(det,coln,amp,1)
+                    m.data_amp_corr(det,coln,amp*shunt_att,1)
+                    
+                    # dBLM integration limits
+                    lo_limit = 10
+                    up_limit = 190
+                    i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,lo_limit,up_limit,1)
+                    i[c.find_val(det+' int. att. corr.',header,0)] = shunt_att*amp*float(i[c.find_val(det+' int.',header,0)])
+                    i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int. att. corr.',header,0)],1,1)
+                    
+                elif det == 'WC':
+                    
+                    lo_limit = 10
+                    up_limit = 90
+                    i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,lo_limit,up_limit,1)
+                    i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int.',header,0)],1,1)
+                    conversion = float(1.602*10**(-19))
+                    i[c.find_val(det+' ppb',header,0)] = m.ppb_calc(det,coln,i[c.find_val(det+' charge sig.',header,0)],conversion,1)
+#                     m.data_plotter(det,coln,1)
+                    
                 else:
                     pass
                 # plots the data 
 #                 m.data_plotter(det,coln,1)
-            
+                m.data_plotter(det,coln,1)
             else:
                 pass
         
