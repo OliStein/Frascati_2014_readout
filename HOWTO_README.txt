@@ -39,6 +39,7 @@ python 2.7
 	
 	download repository
 		terminal/console 
+		cd read_out_path
 			git clone https://github.com/OliStein/Frascati_2014_readout.git
 
 			repeat once in a while:
