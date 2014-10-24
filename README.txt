@@ -26,13 +26,20 @@ Required structure:
 folder_batch.csv gives the list of measurement parameter which creates the folders for the data.
 
 
+
 v1.1
 15.09.2014
 
 Folder python_scripts/ contains now python scripts.
 Main scripts: analyis_script.py
 
-Required structures
+
+Opening and working the DataAnalysisExample.ipynb is done by navigating to the 
+folder, opening a terminal and typing 'ipython notebook'. This should start an
+interface in a browser, that enables fast prototyping and goodies!
+
+
+Required structures:
 
 #Working_folder
 \\data
@@ -41,3 +48,4 @@ Required structures
 	\\log_files 
 
  
+

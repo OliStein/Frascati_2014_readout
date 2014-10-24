@@ -27,8 +27,11 @@ g = gen()
 # <<<<<<< HEAD
 
 
+
+
 sel = data_selector()
 m  = data_math() 
+
 
 
 
@@ -50,6 +53,7 @@ cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
 
 # CHristian's PC path
 # cwd = '/home/csoerens/Desktop/python/Frascati_Data_Analysis'
+
 # cwd = 'C:\\Github'
 
 # FLorian's mac path
@@ -139,8 +143,10 @@ d.ana_file_saver(data_path,d.ana_file,1,'space',1,pflag)
 header = d.ana_file[0]
 
 
+
 # # set to one if all files to be analyzed
 # analyze_all = 0
+
 
 # checks the number of files to be analyzed
 naf = c.tba(d.ana_file,analyze_all,pflag)
@@ -199,6 +205,9 @@ for i in d.ana_file[1:]:
         
         # writes the time from the scope file into the analysis file
         i[c.find_val('time',header,0)] = data_head[18,2]
+        
+        
+        
         # detector loop
         # runs through the coloumns in the data list and analyses the data
 #         det_list = ['icBLM','dBLM','WC']
@@ -237,6 +246,8 @@ for i in d.ana_file[1:]:
                 
                 # gives the signal to noise ratio and writes it to the ana_file 
                 i[c.find_val(det+' SNR',header,0)] = m.signal_to_noise(det,coln,pflag)
+                
+                #MA-filter of data.
                 
                 # gives the max data value and writes it to the ana_file
                 i[c.find_val(det+' max. sig.',header,0)] = m.max_finder(det,coln,pflag)
@@ -314,12 +325,22 @@ for i in d.ana_file[1:]:
             else:
                 pass
         
+
         if plotter_flag == 1:
             m.data_plotter(det,coln,data_header,det_def_list,pflag)
         else:
             pass
         
 #         plt.show()
+
+        # writes the UTC timestamp
+        print i[c.find_val('date',header,0)]
+        #print d.ana_file
+        dateColumn = i[c.find_val('date',header,0)]
+        timeColumn = i[c.find_val('time',header,0)]
+        i[c.find_val('UTCtime',header,0)] = m.UTCtimestamp(dateColumn, timeColumn, 1)
+
+
         # sets the marker in the ana_file list to analyzed
         i[c.find_val('analyzed',header,0)] = 1
         
