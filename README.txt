@@ -26,7 +26,18 @@ Required structure:
 folder_batch.csv gives the list of measurement parameter which creates the folders for the data.
 
 
+v1.1
+15.09.2014
 
+Folder python_scripts/ contains now python scripts.
+Main scripts: analyis_script.py
 
+Required structures
+
+#Working_folder
+\\data
+	\\raw_data
+	\\ana_data
+	\\log_files 
 
  
