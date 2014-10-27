@@ -66,7 +66,7 @@ cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
 # DEFINING THE DECTOR'S CHANNELS
 #--------------------------------------------------
 
-det_def_list = np.array([['icBLM','Channel 3'],['dBLM','Channel 4'],['WC','Channel 2']])
+det_def_list = np.array([['icBLM','Channel 3'],['dBLM','Channel 4'],['WC','Channel 1']])
 
 #--------------------------------------------------
 # IMPORTANT FLAGS FOR THE ANALYSIS
@@ -78,7 +78,7 @@ analyze_all = 0
 
 # sets the limit of files to be analyzed
 # set to negative value if all sets shall be analyzed
-test_limit = 1
+test_limit = -1
 
 
 # skip files, for improving speed
