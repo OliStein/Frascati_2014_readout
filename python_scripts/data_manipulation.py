@@ -434,7 +434,7 @@ class data_math():
     def charge_calculator(self,detector,coln,integral,fac,pflag):
         g.tprinter('running charge calculator for '+detector+' detector',pflag)
         # resistance of the circuit 
-        res = 50.
+        res = 1e8
         charge = fac*float(integral) / res
         g.printer('the measured charge is: '+str(charge),pflag)   
         return charge 

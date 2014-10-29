@@ -17,6 +17,7 @@ from csv_list_class import csv_list
 from gen_class import gen
 from data_manipulation import data_selector
 from data_manipulation import data_math
+import time as tm
 
 
 l = log_files()
@@ -49,7 +50,7 @@ m  = data_math()
 #--------------------------------------------------
 
 # Oliver's mac path
-cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
+#cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
 
 # CHristian's PC path
 # cwd = '/home/csoerens/Desktop/python/Frascati_Data_Analysis'
@@ -61,12 +62,12 @@ cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
 # Daniel's mac path
 
 # Labor Laptop path
-
+cwd = 'C:\\frascati_data'
 #--------------------------------------------------
 # DEFINING THE DECTOR'S CHANNELS
 #--------------------------------------------------
 
-det_def_list = np.array([['icBLM','Channel 3'],['dBLM','Channel 4'],['WC','Channel 1']])
+det_def_list = np.array([['icBLM','Channel 3'],['dBLM','Channel 1'],['WC','Channel 2']])
 
 #--------------------------------------------------
 # IMPORTANT FLAGS FOR THE ANALYSIS
@@ -102,7 +103,7 @@ plotter_flag = 0
 # DONT TOUCH CODE AFTER THIS COMMENT 
 #--------------------------------------------------
 
-
+tstart=tm.time()
 data_path = os.path.join(cwd,'data')
 sel = data_selector()
 m  = data_math() 
@@ -275,12 +276,12 @@ for i in d.ana_file[1:]:
                     
 #                     m.data_plotter(det,coln,1)
                     # icBLM integration limits
-                    lo_limit = 100
-                    up_limit = 600
+                    lo_limit = 350000
+                    up_limit = 350000
                     i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,lo_limit,up_limit,pflag)
                     i[c.find_val(det+' int. att. corr.',header,0)] = shunt_att*amp*float(i[c.find_val(det+' int.',header,0)])
                     g.printer(i[c.find_val(det+' max sig. att. corr.',header,0)],pflag)
-                    i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int. att. corr.',header,0)],1,pflag)
+                    i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int.',header,0)],1,pflag)
                     conversion  = float(1.602*10**(-19))
                     i[c.find_val(det+' ppb',header,0)] = m.ppb_calc(det,coln,i[c.find_val(det+' charge sig.',header,0)],conversion,pflag)
                     # multiplies the data with the correction factor
@@ -295,12 +296,12 @@ for i in d.ana_file[1:]:
                     
                     
                     # dBLM integration limits
-                    lo_limit = 10
-                    up_limit = 140
+                    lo_limit = 350000
+                    up_limit = 350000
                     i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,lo_limit,up_limit,pflag)
                     i[c.find_val(det+' int. att. corr.',header,0)] = shunt_att*amp*float(i[c.find_val(det+' int.',header,0)])
                     
-                    i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int. att. corr.',header,0)],1,pflag)
+                    i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int.',header,0)],1,pflag)
                     # multiplies the data with the correction factor
                     m.data_amp_corr(det,coln,amp*shunt_att,pflag)
                 elif det == 'WC':
@@ -338,7 +339,7 @@ for i in d.ana_file[1:]:
         #print d.ana_file
         dateColumn = i[c.find_val('date',header,0)]
         timeColumn = i[c.find_val('time',header,0)]
-        i[c.find_val('UTCtime',header,0)] = m.UTCtimestamp(dateColumn, timeColumn, 1)
+        i[c.find_val('UTCtime',header,0)] = m.UTCtimestamp(dateColumn, timeColumn, pflag)
 
 
         # sets the marker in the ana_file list to analyzed
@@ -381,6 +382,7 @@ else:
 # saves the ana_file 
 d.ana_file_saver(data_path,d.ana_file,1,'space',1,pflag)
 g.printer('ana_file list finished',1)
+print tm.time()-tstart
 # 
 # 
 # 
