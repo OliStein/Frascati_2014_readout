@@ -282,7 +282,9 @@ for i in d.ana_file[1:]:
                     i[c.find_val(det+' int. att. corr.',header,0)] = shunt_att*amp*float(i[c.find_val(det+' int.',header,0)])
                     g.printer(i[c.find_val(det+' max sig. att. corr.',header,0)],pflag)
                     i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int.',header,0)],1,pflag)
-                    conversion  = float(1.602*10**(-19))
+                    
+                    # Set the conversion factor of the icBLM to 2*10^-16
+                    conversion  = float(2*10**(-16))
                     i[c.find_val(det+' ppb',header,0)] = m.ppb_calc(det,coln,i[c.find_val(det+' charge sig.',header,0)],conversion,pflag)
                     # multiplies the data with the correction factor
                     m.data_amp_corr(det,coln,amp*shunt_att,pflag)
@@ -312,7 +314,10 @@ for i in d.ana_file[1:]:
                     up_limit = 90
                     i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,lo_limit,up_limit,pflag)
                     i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int.',header,0)],1,pflag)
-                    conversion = float(1.602*10**(-19))
+                    
+                    
+                    # added a gain factor of 10 to the conversion for WC
+                    conversion = 10*float(1.602*10**(-19))
                     i[c.find_val(det+' ppb',header,0)] = m.ppb_calc(det,coln,i[c.find_val(det+' charge sig.',header,0)],conversion,pflag)
 #                     m.data_plotter(det,coln,1)
                     # multiplies the data with the correction factor
