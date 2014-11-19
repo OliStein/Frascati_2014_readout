@@ -276,8 +276,10 @@ for i in d.ana_file[1:]:
                     
 #                     m.data_plotter(det,coln,1)
                     # icBLM integration limits
-                    lo_limit = 350000
-                    up_limit = 350000
+                    # set the integration window to -100 ns and +600 ns around the peak of  signal
+                    # need to be checked
+                    lo_limit = 100
+                    up_limit = 600
                     i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,lo_limit,up_limit,pflag)
                     i[c.find_val(det+' int. att. corr.',header,0)] = shunt_att*amp*float(i[c.find_val(det+' int.',header,0)])
                     g.printer(i[c.find_val(det+' max sig. att. corr.',header,0)],pflag)
@@ -298,8 +300,10 @@ for i in d.ana_file[1:]:
                     
                     
                     # dBLM integration limits
-                    lo_limit = 350000
-                    up_limit = 350000
+                    # set the integration window to -50 ns and +200 ns around the peak of  signal
+                    # need to be checked
+                    lo_limit = -50
+                    up_limit = +200
                     i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,lo_limit,up_limit,pflag)
                     i[c.find_val(det+' int. att. corr.',header,0)] = shunt_att*amp*float(i[c.find_val(det+' int.',header,0)])
                     
@@ -310,8 +314,11 @@ for i in d.ana_file[1:]:
                     amp = 1
                     shunt_att = 1
                     
-                    lo_limit = 10
-                    up_limit = 90
+                    # WC integration limits
+                    # set the integration window to -50 ns and +350 ns around the peak of  signal
+                    # need to be checked
+                    lo_limit = 50
+                    up_limit = 350
                     i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,lo_limit,up_limit,pflag)
                     i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int.',header,0)],1,pflag)
                     
