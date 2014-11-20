@@ -8,6 +8,38 @@ import sys
 import os
 import numpy as np
 
+
+#--------------------------------------------------
+# Important variables 
+#--------------------------------------------------
+#++++++++++++++++++++++++++++++++++++++++++++++++++
+
+#--------------------------------------------------
+# PATH OF THE ROOT DIRECTORY
+#--------------------------------------------------
+
+# Oliver's mac path
+cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
+
+# CHristian's PC path
+# cwd = '/home/csoerens/Desktop/python/Frascati_Data_Analysis'
+
+# cwd = 'C:\\Github'
+
+# FLorian's mac path
+
+# Daniel's mac path
+
+# Labor Laptop path
+# cwd = 'C:\\frascati_data'
+
+
+sys.path.append(os.path.join(cwd,'python_scripts/sub_scripts'))
+
+#--------------------------------------------------
+# Importing custom made modules from sub_scripts
+#--------------------------------------------------
+
 from analysis_modules import log_files
 from analysis_modules import data
 from analysis_modules import Tee

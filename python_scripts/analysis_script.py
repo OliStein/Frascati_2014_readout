@@ -8,6 +8,38 @@ import sys
 import os
 import numpy as np
 
+#++++++++++++++++++++++++++++++++++++++++++++++++++
+#--------------------------------------------------
+# Important variables 
+#--------------------------------------------------
+#++++++++++++++++++++++++++++++++++++++++++++++++++
+
+#--------------------------------------------------
+# PATH OF THE ROOT DIRECTORY
+#--------------------------------------------------
+
+# Oliver's mac path
+cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
+
+# CHristian's PC path
+# cwd = '/home/csoerens/Desktop/python/Frascati_Data_Analysis'
+
+# cwd = 'C:\\Github'
+
+# FLorian's mac path
+
+# Daniel's mac path
+
+# Labor Laptop path
+# cwd = 'C:\\frascati_data'
+
+
+sys.path.append(os.path.join(cwd,'python_scripts/sub_scripts'))
+
+#--------------------------------------------------
+# Importing custom made modules from sub_scripts
+#--------------------------------------------------
+
 from analysis_modules import log_files
 from analysis_modules import data
 from analysis_modules import Tee
@@ -34,35 +66,6 @@ sel = data_selector()
 m  = data_math() 
 
 
-
-
-
-
-
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-#--------------------------------------------------
-# Important variables 
-#--------------------------------------------------
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-
-#--------------------------------------------------
-# PATH OF THE ROOT DIRECTORY
-#--------------------------------------------------
-
-# Oliver's mac path
-#cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
-
-# CHristian's PC path
-# cwd = '/home/csoerens/Desktop/python/Frascati_Data_Analysis'
-
-# cwd = 'C:\\Github'
-
-# FLorian's mac path
-
-# Daniel's mac path
-
-# Labor Laptop path
-cwd = 'C:\\frascati_data'
 #--------------------------------------------------
 # DEFINING THE DECTOR'S CHANNELS
 #--------------------------------------------------
@@ -121,13 +124,13 @@ sys.stdout = Tee(sys.stdout, f)
   
   
 d.check_infra_structure(data_path,pflag)
-d.test_data_creator(data_path,pflag)
+# d.test_data_creator(data_path,pflag)
 d.find_data(data_path,pflag)
 # d.ana_file_creator(data_path,1)
 
 
 
-d.ana_file_deleter(data_path,pflag)
+# d.ana_file_deleter(data_path,pflag)
 
 d.ana_file_loader(data_path,pflag)
 d.ana_file_loader(data_path,pflag)
