@@ -19,7 +19,7 @@ import numpy as np
 #--------------------------------------------------
 
 # Oliver's mac path
-cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
+#cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
 
 # CHristian's PC path
 # cwd = '/home/csoerens/Desktop/python/Frascati_Data_Analysis'
@@ -30,11 +30,14 @@ cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
 
 # Daniel's mac path
 
+#sys.path.append(os.path.join(cwd,'python_scripts/sub_scripts'))
+
 # Labor Laptop path
-# cwd = 'C:\\frascati_data'
+cwd = 'D:\\Frascati'
+pydir = 'C:\\Users\\labor\\Frascati_2014_readout\\'
+sys.path.append(os.path.join(pydir,'python_scripts\\sub_scripts'))
 
 
-sys.path.append(os.path.join(cwd,'python_scripts/sub_scripts'))
 
 #--------------------------------------------------
 # Importing custom made modules from sub_scripts
@@ -70,7 +73,7 @@ m  = data_math()
 # DEFINING THE DECTOR'S CHANNELS
 #--------------------------------------------------
 
-det_def_list = np.array([['icBLM','Channel 3'],['dBLM','Channel 1'],['WC','Channel 2']])
+det_def_list = np.array([['icBLM','Channel 3'],['dBLM','Channel 4'],['WC','Channel 2']])
 
 #--------------------------------------------------
 # IMPORTANT FLAGS FOR THE ANALYSIS
@@ -89,7 +92,7 @@ test_limit = -1
 skip_files = 1
 
 # save interval 
-save_int = 10
+save_int = 100
 
 # set pflag
 # pflag = 1 will force modules to print in the log file (recommended) 
@@ -232,17 +235,18 @@ for i in d.ana_file[1:]:
                 # smoothing the data
                 # moving_average correction
                 # indicates in the analysis file if data is smoothed
-                m.flatten_data(det,coln,500,pflag)
+                m.flatten_data(det,coln,50,pflag)
                 
                 i[c.find_val(det+' smoothed',header,0)] = 1
                 
+                # offset correction and writes the offset in the ana_file
+                i[c.find_val(det+' offset',header,0)] = m.offset_corr(det,coln,pflag)
                 
                 # inverts the data if the min value is 2 times smaller than the maximum value
                 # the factor can be changed
                 m.inverter(det,coln,2,pflag)
                 
-                # offset correction and writes the offset in the ana_file
-                i[c.find_val(det+' offset',header,0)] = m.offset_corr(det,coln,pflag)
+                
                 
                 # set to one if the signal is fac larger than the noise lvl
                 # the fac can be cahbnged in data_anipulation.py in m.signal_indicator
@@ -286,10 +290,11 @@ for i in d.ana_file[1:]:
                     i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,lo_limit,up_limit,pflag)
                     i[c.find_val(det+' int. att. corr.',header,0)] = shunt_att*amp*float(i[c.find_val(det+' int.',header,0)])
                     g.printer(i[c.find_val(det+' max sig. att. corr.',header,0)],pflag)
-                    i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int.',header,0)],1,pflag)
+                    #i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int.',header,0)],1,pflag)
+                    i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int. att. corr.',header,0)],1,pflag)
                     
-                    # Set the conversion factor of the icBLM to 2*10^-16
-                    conversion  = float(2*10**(-16))
+                    # Set the conversion factor of the icBLM to 5*10^-16 
+                    conversion  = float(5*10**(-16))
                     i[c.find_val(det+' ppb',header,0)] = m.ppb_calc(det,coln,i[c.find_val(det+' charge sig.',header,0)],conversion,pflag)
                     # multiplies the data with the correction factor
                     m.data_amp_corr(det,coln,amp*shunt_att,pflag)
@@ -305,12 +310,13 @@ for i in d.ana_file[1:]:
                     # dBLM integration limits
                     # set the integration window to -50 ns and +200 ns around the peak of  signal
                     # need to be checked
-                    lo_limit = -50
-                    up_limit = +200
+                    lo_limit = 25
+                    up_limit = 100
                     i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,lo_limit,up_limit,pflag)
                     i[c.find_val(det+' int. att. corr.',header,0)] = shunt_att*amp*float(i[c.find_val(det+' int.',header,0)])
                     
-                    i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int.',header,0)],1,pflag)
+                    #i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int.',header,0)],1,pflag)
+                    i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int. att. corr.',header,0)],1,pflag)
                     # multiplies the data with the correction factor
                     m.data_amp_corr(det,coln,amp*shunt_att,pflag)
                 elif det == 'WC':
@@ -320,8 +326,8 @@ for i in d.ana_file[1:]:
                     # WC integration limits
                     # set the integration window to -50 ns and +350 ns around the peak of  signal
                     # need to be checked
-                    lo_limit = 50
-                    up_limit = 350
+                    lo_limit = 100
+                    up_limit = 250
                     i[c.find_val(det+' int.',header,0)] = m.integrator(det,coln,lo_limit,up_limit,pflag)
                     i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int.',header,0)],1,pflag)
                     
@@ -354,6 +360,7 @@ for i in d.ana_file[1:]:
         #print d.ana_file
         dateColumn = i[c.find_val('date',header,0)]
         timeColumn = i[c.find_val('time',header,0)]
+        print timeColumn
         i[c.find_val('UTCtime',header,0)] = m.UTCtimestamp(dateColumn, timeColumn, pflag)
 
 

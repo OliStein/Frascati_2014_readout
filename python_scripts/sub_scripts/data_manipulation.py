@@ -90,7 +90,7 @@ class data_math():
     
     # Moving average filter implemented with a fft method. 
     #    ~100 times faster than achievable with median filter.
-    def moving_average(self, a, n= 3, end = 20000):
+    def moving_average(self, a, n= 3, end = 2000):
 #         g.tprinter('running moving average for ',pflag)
         kernel = np.ones(n)/float(n)
         out = sig.fftconvolve(a,kernel,mode = 'same')
@@ -168,9 +168,12 @@ class data_math():
     def signal_to_noise(self,detector,coln,pflag):
         g.tprinter('running signal_to_noise for '+detector+' detector',pflag)
         
-        offset = np.median(self.data[-20000:,coln])
+        #n=2000
+        n = int(round(.2*len(self.data)))
+        
+        offset = np.median(self.data[-n:,coln])
         signal = self.data[:,coln] - offset
-        noise = signal[-20000:]
+        noise = signal[-n:]
         
         sigRMS = self.rms(signal,0)
         noiseRMS = self.rms(noise,0)
@@ -185,7 +188,9 @@ class data_math():
     # takes the median of the last n data points and subtracts it from all the data        
     def offset_corr(self,detector,coln,pflag):
         g.tprinter('running offset_corr for '+detector+' detector',pflag)
-        n=20000
+        #n=2000
+        #Takes the last 10% of the data points
+        n = int(round(.1*len(self.data)))
         offset = np.median(self.data[-n:,coln])
         g.printer('offset for '+detector+' detector:',pflag)
         g.printer(offset,pflag)
@@ -198,7 +203,9 @@ class data_math():
     # looks for the max and min val in the last n data points
     def noise_finder(self,detector,coln,pflag):
         g.tprinter('running RMS noise_finder for '+detector+' detector',pflag)
-        n = 20000
+        #n=2000
+        #Takes the last 10% of the data points
+        n = int(round(.1*len(self.data)))
         offset = np.median(self.data[-n:,coln])
         signal = self.data[:, coln] - offset
         noise = self.rms(signal[-n:], 0)
@@ -259,7 +266,7 @@ class data_math():
         
 #         g.printer(max_sig_pos,pflag)
         
-        dtVector = np.diff(self.data[2000:10000, 0])
+        dtVector = np.diff(self.data[2000:5000, 0])
         
         #g.printer('Standard deviation of timesteps: '+str(np.std(dtVector)),pflag)
         #    -   It was seen that the standard deviation was ~e-24. 
@@ -279,11 +286,11 @@ class data_math():
         
         # upper interval in data points from the max. sig. pos.
         up_interval = int(round((upper_limit*10**(-9))/dt))
-        g.printer(up_interval,pflag)
-        g.printer(len(self.data),pflag)
+        g.printer('up_interval'+str(up_interval),pflag)
+        g.printer('length self.data'+str(len(self.data)),pflag)
         # upper interval position in data list
         up = max_sig_pos + up_interval
-        g.printer(up,pflag)
+        g.printer('upper interval position in data list'+str(up),pflag)
         # checks if the interval limits lay outside the list
         # lower limit < 0
         # upper limit > len(self.data)
@@ -291,13 +298,13 @@ class data_math():
         if low < 0:
             low = 0
         else:
-            pass
+            g.printer('up within data length',pflag)
         
-        if up > len(self.data):
-            up = len(self.data)-1
+        if up >= len(self.data):
+            up = len(self.data)-2
             g.printer('setting upper integral limit to len(m.data):'+str(len(self.data)),pflag)
         else:
-            pass
+            g.printer('up within data length',pflag)
         
         
         # some output in console    
@@ -401,8 +408,11 @@ class data_math():
         
     # by giving the attenuation factor in db it calculates the real signal height     
     def amp_calc(self,detector,coln,amp,pflag):
-        g.tprinter('running amp_clac for '+detector+' detector',pflag)
-        g.printer('the amplification/attenuation is '+str(int(amp))+' dB',pflag)
+        try:
+            g.tprinter('running amp_clac for '+detector+' detector',pflag)
+            g.printer('the amplification/attenuation is '+str(int(amp))+' dB',pflag)
+        except ValueError:
+            pass
         out = 10**(float(amp)/20)
         g.printer('the resulting factor is: '+str(out),pflag)
         return out
@@ -416,16 +426,18 @@ class data_math():
     
     # by giving if a shunt was used it will return the shunt attenuation factor shunt_att            
     def shunt_calc(self,detector,coln,shunt,pflag):
-        g.tprinter('running shunt_calc for '+detector+' detector',pflag)  
-        
-        if int(shunt) == 1:
-            g.printer('shunt used',pflag)
+        try:
+            g.tprinter('running shunt_calc for '+detector+' detector',pflag)  
             
-            shunt_att = 50
-            g.printer('shunt att:'+str(shunt_att),pflag)
-        else:
-            g.printer('no shunt used',pflag)
-            shunt_att = 1
+            if int(shunt) == 1:            
+                shunt_att = 50
+                g.printer('shunt att:'+str(shunt_att),pflag)
+                g.printer('shunt used',pflag)
+            else:
+                g.printer('no shunt used',pflag)
+                shunt_att = 1
+        except ValueError:
+            pass
             
         return shunt_att
     
@@ -434,8 +446,8 @@ class data_math():
     def charge_calculator(self,detector,coln,integral,fac,pflag):
         g.tprinter('running charge calculator for '+detector+' detector',pflag)
         # resistance of the circuit 
-        res = 1e8
-        charge = fac*float(integral) / res
+        res = 50
+        charge = fac*float(integral) / res  #Presently set for real measurements.
         g.printer('the measured charge is: '+str(charge),pflag)   
         return charge 
     
@@ -472,6 +484,7 @@ class data_math():
         #Reading the time stamp
         #  The 1970 is added to have a correct reference to the unix 
         #   epoch timestamp.
+        print timeColumn
         tstamp = calendar.timegm(
                 time.strptime('1970:'+str(timeColumn),
                          '%Y:%H:%M:%S'))

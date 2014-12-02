@@ -19,7 +19,7 @@ import numpy as np
 #--------------------------------------------------
 
 # Oliver's mac path
-cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
+#cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
 
 # CHristian's PC path
 # cwd = '/home/csoerens/Desktop/python/Frascati_Data_Analysis'
@@ -30,11 +30,17 @@ cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
 
 # Daniel's mac path
 
+# sys.path.append(os.path.join(cwd,'python_scripts/sub_scripts'))
+
 # Labor Laptop path
-# cwd = 'C:\\frascati_data'
+#cwd = 'C:\\frascati_data'
+#pydir = 'C:\\Users\\labor\\Frascati_2014_readout\\'
+#sys.path.append(os.path.join(pydir,'python_scripts\\sub_scripts'))
 
-
-sys.path.append(os.path.join(cwd,'python_scripts/sub_scripts'))
+# Labor Laptop path
+cwd = 'Y:'
+pydir = 'C:\\Users\\labor\\Frascati_2014_readout\\'
+sys.path.append(os.path.join(pydir,'python_scripts\\sub_scripts'))
 
 #--------------------------------------------------
 # Importing custom made modules from sub_scripts
@@ -71,30 +77,6 @@ m  = data_math()
 
 
 
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-#--------------------------------------------------
-# Important variables 
-#--------------------------------------------------
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-
-#--------------------------------------------------
-# PATH OF THE ROOT DIRECTORY
-#--------------------------------------------------
-
-# Oliver's mac path
-cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
-
-# CHristian's PC path
-# cwd = '/home/csoerens/Desktop/python/Frascati_Data_Analysis'
-
-# cwd = 'C:\\Github'
-
-# FLorian's mac path
-
-# Daniel's mac path
-
-# Labor Laptop path
-# cwd = 'C:\\frascati_data'
 
 #--------------------------------------------------
 # IMPORTANT FLAGS FOR THE ANALYSIS

@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import shutil as st
 import pickle 
-from time import strftime, localtime
+from time import strftime, localtime, time
 import time
 import glob
 
@@ -179,7 +179,7 @@ class data():
         # Header with the column names
         self.ana_list = np.array([['id','meas. type','run','date','detector','type','xpos','ypos','ref.','ref. DAQ','att. ref.','volt. ref.','diamond',
 
-                          'att. diamond','shunt','volt. dBLM','scpr11','scpr12','scpr21','scpr22','udc','meas. nr.','time', 'UTCtime',
+                          'att. diamond','shunt','volt. dBLM','scpr11','scpr12','scpr21','scpr22','scpr31','scpr32','scpr41','scpr42','meas. nr.','time', 'UTCtime',
                           'WC','WC sig.','WC offset','WC noise','WC smoothed','WC max. sig.','WC SNR','WC FWHM','WC int.','WC charge sig.','WC ppb',
                           'icBLM','icBLM sig.','icBLM offset','icBLM noise','icBLM smoothed','icBLM max. sig.','icBLM SNR','icBLM max sig. att. corr.','icBLM FWHM','icBLM int.','icBLM int. att. corr.','icBLM charge sig.','icBLM ppb',
                           'keithley data','keithley timestamp',
@@ -224,17 +224,18 @@ class data():
    
         self.missing_data_list = np.array(['missing'])
         tbaf = 0
+        
         for i in self.data_list:
 
-
-            if i in self.ana_file:
+            tstart = time.time()
+            if i in self.ana_file: ##Overvej om det virkelig er det kvikkeste!
                 
-#                 g.printer('is in file',pflag)
+                #g.printer('is in file',pflag)
                 pass
             else:
-#                 g.printer('is not in file',pflag)
+                #g.printer('is not in file',pflag)
                 self.missing_data_list = np.append(self.missing_data_list,i)
-                
+            print time.time()-tstart    
         if tbaf == 0:
             g.printer('ana_file is up to date',pflag)
         else:
@@ -270,7 +271,7 @@ class data():
             sys.exit('ana_file not a list or defined')
     
 
-        if len(self.ana_file[0]) == 64:
+        if len(self.ana_file[0]) == 67:
             
             self.ana_check = 1
             
