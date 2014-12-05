@@ -19,7 +19,7 @@ import numpy as np
 #--------------------------------------------------
 
 # Oliver's mac path
-#cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
+cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
 
 # CHristian's PC path
 # cwd = '/home/csoerens/Desktop/python/Frascati_Data_Analysis'
@@ -30,12 +30,12 @@ import numpy as np
 
 # Daniel's mac path
 
-#sys.path.append(os.path.join(cwd,'python_scripts/sub_scripts'))
+sys.path.append(os.path.join(cwd,'python_scripts/sub_scripts'))
 
 # Labor Laptop path
-cwd = 'D:\\Frascati'
-pydir = 'C:\\Users\\labor\\Frascati_2014_readout\\'
-sys.path.append(os.path.join(pydir,'python_scripts\\sub_scripts'))
+# cwd = 'D:\\Frascati'
+# pydir = 'C:\\Users\\labor\\Frascati_2014_readout\\'
+# sys.path.append(os.path.join(pydir,'python_scripts\\sub_scripts'))
 
 
 
@@ -105,12 +105,29 @@ pflag = 1
 plotter_flag = 0
 
 
+fold = 'data_save_raw' 
+# meas_data = 'ic_test_1'
+# meas_data = 'lrun_H3_1'
+# meas_data = 'test_H3_1'
+meas_data = 'test_H3_2'
+# meas_data = 'test_L1_1'
+# meas_data = 'vs_H1_1'
+# meas_data = 'vs_H2_1'
+# meas_data = 'vs_H3_1'
+# meas_data = 'vs_H3_2'
+# meas_data = 'vs_L1_1'
+# meas_data = 'vs_L2_1'
+# meas_data = 'xali_H3_1'
+# meas_data = 'xali_H3_2'
+# meas_data = 'yali_H3_1'
+dest = os.path.join(fold,meas_data)
+
 #--------------------------------------------------
 # DONT TOUCH CODE AFTER THIS COMMENT 
 #--------------------------------------------------
 
 tstart=tm.time()
-data_path = os.path.join(cwd,'data')
+data_path = os.path.join(cwd,dest)
 sel = data_selector()
 m  = data_math() 
 
