@@ -183,8 +183,8 @@ class data():
                           'WC','WC sig.','WC offset','WC noise','WC smoothed','WC max. sig.','WC SNR','WC FWHM','WC int.','WC charge sig.','WC ppb',
                           'icBLM','icBLM sig.','icBLM offset','icBLM noise','icBLM smoothed','icBLM max. sig.','icBLM SNR','icBLM max sig. att. corr.','icBLM FWHM','icBLM int.','icBLM int. att. corr.','icBLM charge sig.','icBLM ppb',
                           'keithley data','keithley timestamp',
-                          'dBLM','dBLM sig.','dBLM offset','dBLM noise','dBLM smoothed','dBLM max. sig.','dBLM SNR','dBLM max sig. att. corr.','dBLM FWHM','dBLM int.','dBLM int. att. corr.','dBLM charge sig.',
-                          'analyzed','file']])
+                          'dBLM','dBLM sig.','dBLM offset','dBLM noise','dBLM smoothed','dBLM max. sig.','dBLM SNR','dBLM sat.','dBLM num. sat. points','dBLM max sig. att. corr.','dBLM FWHM','dBLM int.','dBLM int. att. corr.','dBLM det. curr. max. sig.','dBLM det. curr. int. wind.','dBLM det. curr.','dBLM charge sig.',
+                          'analyzed','problem','file']])
         # Extends the list with the found data files and pathes
         # Analysis results are set to zero in the beginning
         
@@ -271,7 +271,7 @@ class data():
             sys.exit('ana_file not a list or defined')
     
 
-        if len(self.ana_file[0]) == 67:
+        if len(self.ana_file[0]) == 73:
             
             self.ana_check = 1
             

@@ -493,12 +493,21 @@ class data_math():
     
     
     
+    def detector_current(self,detector,coln,charge,time,pflag):
+        g.tprinter('Running detector current calculation for '+detector+' detector',pflag)
+        curr = float(charge)/float(time)
+        g.printer('The detector current over '+str(time)+'seconds is'+str(curr)+' Ampere',pflag)
+        return curr
     
+    def max_detector_current(self,detector,coln,max_sig,res,pflag):
+        g.tprinter('Running  max detector current calculation for '+detector+' detector',pflag)
+        
+        curr = float(max_sig)/float(res)
+        g.printer('The detector current over 1 second is'+str(curr)+' Ampere',pflag)
+        return curr
     
-    
-    
-    
-    
-    
+    def sat_detection(self,detector,coln,pflag):
+        g.tprinter('Running saturation detection for '+detector+' detector',pflag)
+        pass
     
             

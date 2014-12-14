@@ -2,10 +2,10 @@ import os as os
 import numpy as np
 import time as tm
 
+cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout/data_save_raw/vs_L2_1'
+wdir = os.path.join(cwd,'raw_data/067_vs_02_27112014_L2_500_042690_021510_1_keithl_00_1500_1_00_1_500_0000_0000_0000_0000_0000_0000_0000_0000')
 
-wdir = 'C:\\fd\\raw_data\\067_vs_02_27112014_L2_500_042690_021510_1_keithl_00_1500_1_00_1_500_0000_0000_0000_0000_0000_0000_0000_0000'
-
-
+print 'ping'
 nfiles = 0
 for file in os.listdir(wdir):
     print 'Checking file '+ file
@@ -14,7 +14,7 @@ for file in os.listdir(wdir):
 
 
         #### READ AND PROPAGATE GLOBAL CHANGES TO FILE
-        fin = open(wdir+'\\'+file, 'r')
+        fin = open(wdir+'/'+file, 'r')
         arr = []
         for line in fin.readlines():
             #split and join, to add the comma. This will remove the whitespace, but it should be ok. 
@@ -24,9 +24,9 @@ for file in os.listdir(wdir):
         #### SAVE AND APPLY THE EXTRA COLUMN
         fnout = file
 
-        fout = open(wdir+'\\output\\'+fnout, 'w')
+        fout = open(wdir+'/output/'+fnout, 'w+')
         #Write first line of header
-
+        print 'pong'
         fout.writelines(',Channel 4,Channel 2\n')
 
         #write unchanged header
@@ -34,13 +34,13 @@ for file in os.listdir(wdir):
             fout.writelines(i)
             
         #Write DATE
-        date = arr[16].strip('\n')
+        date = arr[16].strip('\r\n')
         date = date+','+date[-11:]+'\n'
         #print date
         fout.writelines(date)
 
         #Write timestamp
-        time = arr[17].strip('\n').split(':,')
+        time = arr[17].strip('\r\n').split(':,')
         timeOut = ':'.join([str(int(time[1])), str(int(time[2])), str(int(round(float(time[3]))))])
         ti = tm.strptime(timeOut, '%H:%M:%S')
         timeString = tm.strftime('%H:%M:%S', ti)
@@ -57,7 +57,7 @@ for file in os.listdir(wdir):
         fout.writelines('Time Tags (Channel 4),Channel 4,Channel 2\n')
         #Write the datafile
         for i in arr[21:]:
-            fout.writelines(i.strip('\n')+',0.0E0\n')
+            fout.writelines(i.strip('\r\n')+',0.0E0\n')
         fout.close()
         #tm.sleep(0.01)
     #tm.sleep(0.3)

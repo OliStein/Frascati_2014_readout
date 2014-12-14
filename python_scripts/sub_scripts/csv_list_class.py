@@ -16,11 +16,12 @@ import time
 import glob
 
 from gen_class import gen
-from list_class import lists
-
+# from list_class import lists
+from problem_handler import prob_handler
 
 # import of plotting class
 g = gen()
+prob = prob_handler()
 
 # import list class
 # obsolete
@@ -116,14 +117,48 @@ class csv_list():
         file_path = os.path.split(i[pos])[0]
         g.printer(file_name,pflag)
         g.printer(file_path,pflag)
+        info_string= 'file ok'
         data_comp = []
+#         g.printer('prob flag '+str(prob.flag_ret()),1)
+        # tries to load the data and checks the format
         try:
-            data_comp = self.csv_file_loader(file_path,file_name,0)
+            data=self.csv_file_loader(file_path,file_name,1)
+            flag = 1
+            data_comp = [flag,data,info_string]
             g.printer('data file successfully loaded',pflag)
-        except:
-            g.printer('no file loaded',pflag)
-            sys.exit('program stop')
             
+            try:
+#                 g.printer('next',pflag)
+#                 g.printer(data[1][0],pflag)
+#                 g.printer('next 2',pflag)
+#                 g.printer(data[1][0],pflag)
+#                 g.printer(str(str('Revision:')==str(data[1][0])[0:9]),pflag)
+#                 g.printer('next 3',pflag)
+                if str('Revision:')==(str(data[1][0])[0:9]):
+#                     g.printer('next 4',pflag)
+                    flag = 1
+                    info_string = 'data fine'
+                    data_comp = [flag,data,info_string]
+                else:
+                    flag = 0
+                    data_comp[0]=0
+                    info_string = 'data not correct'
+                    
+                
+            except:     
+                flag = 0
+                data_comp[0]=0
+                info_string = 'data no list'
+        except:
+            g.printer('no data file loaded',pflag)
+            info_string= 'not loaded'
+            data=0
+            flag = 0
+            data_comp = [flag,data,info_string]
+            data_comp=[flag,data,info_string]
+#             prob.flag_set()
+            #sys.exit('program stop')
+#         g.printer('prob info '+prob.info,1)    
         return data_comp   
     
     # returns the index of cname in a list
@@ -138,6 +173,8 @@ class csv_list():
     # checks which files in the ana_file have to be analyzed
     # if analyze_all == 1, all files will be analyzed
     # if in i in ana_file the analyzed flag is !=1 then the file is included in the analysis 
+    
+    
     def tba(self,ana_file,analyze_all,pflag):
         g.tprinter('running tba',pflag)
         header = ana_file[0]
@@ -155,4 +192,15 @@ class csv_list():
         
         g.printer(str(naf)+' of '+str(len(ana_file)-1)+' data sets have to be analyzed',pflag)
         
-        return naf    
+        return naf  
+#     
+#     def problem_init(self):
+#         self.prob = 'no' 
+#         
+#     def problem_check(self):
+#         if self.prob != 'no':
+#              return break 
+#         
+#     def problem_flag_set(self,set,header):
+#         self.prob = set
+#         self.problem_check()   
