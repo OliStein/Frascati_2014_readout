@@ -19,7 +19,7 @@ import numpy as np
 #--------------------------------------------------
 
 # Oliver's mac path
-cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout'
+cwd = '/Users/Oli/work/Frascati/Frascati_2014_readout' 
 
 # CHristian's PC path
 # cwd = '/home/csoerens/Desktop/python/Frascati_Data_Analysis'
@@ -269,8 +269,9 @@ for i in d.ana_file[1:]:
                     # smoothing the data
                     # moving_average correction
                     # indicates in the analysis file if data is smoothed
-                    m.flatten_data(det,coln,50,pflag)
                     
+                    m.flatten_data(det,coln,50,pflag)
+                     
                     i[c.find_val(det+' smoothed',header,0)] = 1
                     
                     # offset correction and writes the offset in the ana_file
@@ -283,7 +284,7 @@ for i in d.ana_file[1:]:
                     
                     
                     # set to one if the signal is fac larger than the noise lvl
-                    # the fac can be cahbnged in data_anipulation.py in m.signal_indicator
+                    # the fac can be changed in data_manipulation.py in m.signal_indicator
                     i[c.find_val(det+' sig.',header,0)] = m.signal_indicator(det,coln,pflag)
                     
                     # gives the signal to noise ratio and writes it to the ana_file 
@@ -328,7 +329,10 @@ for i in d.ana_file[1:]:
                         i[c.find_val(det+' charge sig.',header,0)] = m.charge_calculator(det, coln, i[c.find_val(det+' int. att. corr.',header,0)],1,pflag)
                         
                         # Set the conversion factor of the icBLM to 5*10^-16 
-                        conversion  = float(5*10**(-16))
+                        conversion = float( 5*10**(-16))
+                        # taking into account that the electron pulse is only 50% of the whole signal
+                        # multiply by 2 
+                        conversion = 2 * conversion 
                         i[c.find_val(det+' ppb',header,0)] = m.ppb_calc(det,coln,i[c.find_val(det+' charge sig.',header,0)],conversion,pflag)
                         # multiplies the data with the correction factor
                         m.data_amp_corr(det,coln,amp*shunt_att,pflag)

@@ -114,10 +114,10 @@ class data_math():
                 break
         return imid
     
-   
+    # Flattens the data 
     def flatten_data(self,detector,coln,window,pflag):
         g.tprinter('running flatten_data for '+detector+' detector',pflag)
-        f_data = self.moving_average(self.data[:,coln],window,20000)
+        f_data = self.moving_average(self.data[:,coln],window,2*window)
         self.data[:,coln] = f_data
         
 
@@ -430,7 +430,7 @@ class data_math():
             g.tprinter('running shunt_calc for '+detector+' detector',pflag)  
             
             if int(shunt) == 1:            
-                shunt_att = 50
+                shunt_att = 51
                 g.printer('shunt att:'+str(shunt_att),pflag)
                 g.printer('shunt used',pflag)
             else:
